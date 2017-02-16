@@ -33,8 +33,8 @@ def main():
 	vote_matrix = 'topic_matric_twoparty_balan.csv'
 	two_party = True		
 	
-	fill_method = mc.fill_knn_whole
-	fill_method_name = 'knn'
+	fill_method = mc.fill_biscaler_whole
+	fill_method_name = 'biscaler'
 	threshold = 0	
 	
 	probs_file = filename +  '.pro'
