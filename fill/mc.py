@@ -18,7 +18,7 @@ def fill_whole(f,df):
 	cols.remove('user_topic')
 	cols.remove('Class')
 	df = df.replace('yes','1').replace('no','0').replace('?',np.nan)
-	m = df[cols].as_matrix().astype(np.float32)
+	m = df[cols].as_matrix().astype(np.float64)
 	m = f(m)
 	questions = df.columns.values.tolist()
 	a = df['user_topic'].as_matrix()[:,None]
@@ -76,16 +76,16 @@ def fill_biscaler_whole(matrix):
 	'''
 BiScaler: Iterative estimation of row/column means and standard deviations to get doubly normalized matrix. Not guaranteed to converge but works well in practice. Taken from Matrix Completion and Low-Rank SVD via Fast Alternating Least Squares.
 	'''
-	matrix = BiScaler().complete(matrix)
+	matrix = BiScaler().fit_transform(matrix)
 	return matrix
 		
 
 
 
 if __name__ == '__main__':
-	filename = '/home/yangying/feature_selection/test0113/new_crawl/topic_matric_twoparty_balan.csv'
+	filename = '../../mq_data/topic_matric_twoparty_balan.csv'
 	df = pd.read_csv(filename)
-	newdf = fill_whole(fill_biscaler_whole,df)
+	newdf = fill_whole(fill_mf_whole,df)
 	print newdf.as_matrix().shape
 	## blahblah
 
