@@ -11,7 +11,7 @@ from fill import mc
 data_path = '../mq_data/'
 result_path = '../mq_result/'
 
-def probability(rule,two_party=False):
+def probability(rule,probs_file,two_party=False):
 	merge.get_probs_file(rule,probs_file,two_party)
 
 def fill_matrix(origin_file,probs_file,goal_fill,origin_fill,fill_method,threshold):
@@ -33,13 +33,13 @@ def main():
 	vote_matrix = 'topic_matric_twoparty_balan.csv'
 	two_party = True		
 	
-	fill_method = mc.fill_sim_whole
-	fill_method_name = 'sim'
+	fill_method = mc.fill_knn_whole
+	fill_method_name = 'knn'
 	threshold = 0	
 	
 	probs_file = filename +  '.pro'
 	if not os.path.exists(probs_file):
-		probability(rule,two_party)
+		probability(rule,probs_file,two_party)
 		
 	origin_file = data_path + vote_matrix
 	vote_matrix = vote_matrix.replace('topic_matric','')		

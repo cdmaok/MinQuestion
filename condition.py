@@ -61,25 +61,24 @@ class FieldDict:
 	def load(self,filename):
 		line = open(filename).readline().strip()
 		self.fd = json.loads(line)
+	
+	def parse(self,con):
+		pass
 
-	def check(self):
-		i = 1
-		pass 
 		
 
 if __name__ == '__main__':
-	'''
-	filename = '/home/linlt/code/probability/data.csv'
+	filename = '../mq_data/process_data/data.csv'
 	rule =  {'Gender':'Male','Age':20,'Location':['California','Nebraska']}
 	df = pd.read_csv(filename)
 	#print df.describe()
 	con = Condition(rule)
 	print con.extract(df)
 	'''
-	filename = '/home/yangying/mq_data/process_data/data.csv'
-	fdpath = '/home/yangying/mq_data/process_data/data.fd'
+	filename = '../mq_data/process_data/data.csv'
+	fdpath = '../mq_data/process_data/data.fd'
 	fd = FieldDict(fdpath)
 	#fd.train(filename,missing_value = np.nan)
 	fd.check()
-	
+	'''
 		

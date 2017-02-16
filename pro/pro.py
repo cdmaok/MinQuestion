@@ -5,9 +5,9 @@ import numpy as np
 import pandas as pd
 import label_propagation
 from sklearn.preprocessing import OneHotEncoder
-data_path = '/home/yangying/mq_data/process_data/data.csv'
-middle_0_path = '/home/yangying/mq_data/process_data/middledata_0.csv'
-middle_freq_path = '/home/yangying/mq_data/process_data/middledata_frequent.csv'
+data_path = '../../mq_data/process_data/data.csv'
+middle_0_path = '../../mq_data/process_data/middledata_0.csv'
+middle_freq_path = '../../mq_data/process_data/middledata_frequent.csv'
 def attr(): ##属性取值
     df = pd.read_csv(data_path)
     mat = df.as_matrix()
