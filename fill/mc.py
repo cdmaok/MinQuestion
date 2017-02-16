@@ -3,7 +3,6 @@
 ## this code is demo about matrix completion
 import pandas as pd
 import numpy as np
-from condition import Condition
 from fancyimpute import MatrixFactorization,MICE,BiScaler, KNN, NuclearNormMinimization, SoftImpute,IterativeSVD
 
 
@@ -86,7 +85,7 @@ BiScaler: Iterative estimation of row/column means and standard deviations to ge
 if __name__ == '__main__':
 	filename = '/home/yangying/feature_selection/test0113/new_crawl/topic_matric_twoparty_balan.csv'
 	df = pd.read_csv(filename)
-	newdf = fill_whole(fill_knn_whole,df)
+	newdf = fill_whole(fill_biscaler_whole,df)
 	print newdf.as_matrix().shape
 	## blahblah
 

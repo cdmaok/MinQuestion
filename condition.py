@@ -55,15 +55,20 @@ class FieldDict:
 		fields = df.columns.values.tolist()[:]
 		fields.remove('User_name')
 		size = len(df[fields[0]].tolist())
-		for f in fields:
-			self.fd[f] = {missing_value:0}
+		m = df.as_matrix()
+		for f,v in enumerate(fields):
+			f += 1
+			self.fd[v] = {missing_value:0}
 			for i in range(size):
-				value = df[f][i]
-				if not hasKey(self.fd[f],value,missing_value):
-					tmp = len(self.fd[f])
-					self.fd[f][value] = tmp
-				df[f][i] = getValue(self.fd[f],value,missing_value)
-		df.to_csv(filename+'.2int',index=False)
+				value = m[i][f]
+				if not hasKey(self.fd[v],value,missing_value):
+					if type(value) == float: value = int(value)
+					tmp = len(self.fd[v])
+					self.fd[v][value] = tmp
+				new_value= getValue(self.fd[v],value,missing_value)
+				m[i][f] = new_value
+		newdf = pd.DataFrame(data=m,columns=df.columns.values)
+		newdf.to_csv(filename+'.2int',index=False)
 		self.save(filename+'.fd')
 		
 	def save(self,filename):
@@ -81,10 +86,14 @@ class FieldDict:
 		for rule in rules:
 			values = rules[rule]
 			rule = unicode(rule)
-			if values == list:
-				print 
+			if type(values) == list:
+				intlist = [ self.fd[rule][v] for v in values]
+				print intlist
+				tmp[rule] = intlist
 			else:
-				print 
+				values = str(values)
+				tmp[rule] = self.fd[rule][values]
+		return Condition(tmp)
 			
 		
 
@@ -93,13 +102,13 @@ if __name__ == '__main__':
 	rule =  {'Gender':'Male','Age':20,'Location':['California','Nebraska']}
 	#df = pd.read_csv(filename)
 	#print df.describe()
-	#con = Condition(rule)
+	con = Condition(rule)
 	#print con.extract(df)
 	
 	filename = '../mq_data/process_data/data.csv'
-	#fdpath = '../mq_data/process_data/data.fd'
-	#fd = FieldDict(fdpath)
-	fd = FieldDict()
-	fd.train(filename,missing_value = np.nan)
-	#print fd.parse(con)
+	fdpath = '../mq_data/process_data/data.csv.fd'
+	fd = FieldDict(fdpath)
+	#fd = FieldDict()
+	#fd.train(filename,missing_value = np.nan)
+	print fd.parse(con)
 		
