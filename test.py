@@ -5,9 +5,8 @@ import pandas as pd
 import sampling_method
 import classifier
 import sys
-sys.path.append('./fill')
 import fill
-import mc
+from fill import mc
 
 data_path = '../mq_data/'
 result_path = '../mq_result/'
@@ -54,8 +53,8 @@ def main():
 	
 	####### 2. begin ensemble_FeatureSelection
 	f_size = 10
-	en = True
-	time =10		
+	en = False
+	time =1		
 	fs_method_list = [4,5,6,3,0,2,1,8,9,7]
 	#[0 svmvoter, 1 lassovoter, 2 dtvoter, 3 Kbesetvoter,
 	# 4 sampling_method.EntropyVoterSimple, 5 VarianceVoter, 6 CorelationVoter, 7 WrapperVoter, 8 RndLassovoter, 9 GBDTvoter]

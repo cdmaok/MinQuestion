@@ -22,7 +22,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-'''TODO: fill with matrix factorization'''
+'''TODO: fill with matrix factorization change Vote Matrix'''
 
 Path = '/home/yangying/mq_data/'
 Cluster_Result = Path + '/process_data/fulldata_xmeans.csv'
@@ -30,6 +30,7 @@ Vote_Matrix = Path + '/topic_matric_origin.csv'
 Comment_Dir = Path + '/comments/'
 Filemodel = Path + '/wiki_doc2vec.bin'
 Stoplist = Path + 'SmartStoplist.txt'
+
 def group(label):
 	username = []
 	df = pd.read_csv(Cluster_Result)

@@ -4,11 +4,8 @@ import sys
 import random
 import numpy as np
 import condition
-#sys.path.append('/home/linlt/code/probability')
-#sys.path.append('/home/linlt/code/new_crawl/probability')
-sys.path.append('./pro')
-import pro
-import pro_twoparty
+from pro import pro
+from pro import pro_twoparty
 import sampling_method
 import pandas as pd
 import math,numpy
