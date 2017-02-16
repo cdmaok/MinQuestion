@@ -76,6 +76,7 @@ def fill_biscaler_whole(matrix):
 	'''
 BiScaler: Iterative estimation of row/column means and standard deviations to get doubly normalized matrix. Not guaranteed to converge but works well in practice. Taken from Matrix Completion and Low-Rank SVD via Fast Alternating Least Squares.
 	'''
+	matrix[np.isnan(matrix)] = 0
 	matrix = BiScaler().fit_transform(matrix)
 	return matrix
 		
@@ -85,7 +86,7 @@ BiScaler: Iterative estimation of row/column means and standard deviations to ge
 if __name__ == '__main__':
 	filename = '../../mq_data/topic_matric_twoparty_balan.csv'
 	df = pd.read_csv(filename)
-	newdf = fill_whole(fill_mf_whole,df)
+	newdf = fill_whole(fill_biscaler_whole,df)
 	print newdf.as_matrix().shape
 	## blahblah
 
