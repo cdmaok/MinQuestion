@@ -30,9 +30,9 @@ def main():
 	filename = result_path + 'white_old'
 	
 	#vote_matrix = 'topic_matric_origin.csv'
-	#vote_matrix ='topic_matric_origin_balan.csv'
-	vote_matrix = 'topic_matric_twoparty_balan.csv'
-	two_party = True		
+	vote_matrix ='topic_matric_origin_balan.csv'
+	#vote_matrix = 'topic_matric_twoparty_balan.csv'
+	two_party = False		
 	
 	fill_method = mc.fill_biscaler_whole
 	fill_method_name = 'biscaler'
