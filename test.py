@@ -26,18 +26,18 @@ def fill_matrix(origin_file,probs_file,goal_fill,origin_fill,fill_method,thresho
 
 def main():
 	
-	#rule = {'Ethnicity':'White','Age':[40,50,60,70,80,90,100,110]}	
-	#filename = result_path + 'white_old'
-	rule = {'Gender':'Female'}	
-	filename = result_path + 'women'
+	rule = {'Ethnicity':'White','Age':[40,50,60,70,80,90,100,110]}	
+	filename = result_path + 'white_old'
+	#rule = {'Gender':'Female'}	
+	#filename = result_path + 'women'
 	
-	#vote_matrix = 'topic_matric_origin.csv'
+	vote_matrix = 'topic_matric_origin.csv'
 	#vote_matrix ='topic_matric_origin_balan.csv'
-	vote_matrix = 'topic_matric_twoparty_balan.csv'
-	two_party = True		
+	#vote_matrix = 'topic_matric_twoparty_balan.csv'
+	two_party = False		
 	
-	fill_method = mc.fill_knn_whole
-	fill_method_name = 'knn'
+	fill_method = mc.fill_svd_whole
+	fill_method_name = 'svd'
 	threshold = 0	
 	
 	probs_file = filename +  '.pro'
