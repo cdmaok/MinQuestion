@@ -29,6 +29,16 @@ def hasKey(fd,value,missing_value):
 		else:
 			return fd.has_key(value)
 
+def getValue(fd,key,missing_value):
+	if type(missing_value) == str:
+		return fd[key]
+	elif np.isnan(missing_value):
+		if type(key) == str:
+			return fd[key]
+		elif np.isnan(key):
+			return 0
+		else:
+			return fd[key]
 
 class FieldDict:
 	
@@ -52,6 +62,9 @@ class FieldDict:
 				if not hasKey(self.fd[f],value,missing_value):
 					tmp = len(self.fd[f])
 					self.fd[f][value] = tmp
+				df[f][i] = getValue(self.fd[f],value,missing_value)
+		df.to_csv(filename+'.2int',index=False)
+		self.save(filename+'.fd')
 		
 	def save(self,filename):
 		output = open(filename,'w')
@@ -63,22 +76,30 @@ class FieldDict:
 		self.fd = json.loads(line)
 	
 	def parse(self,con):
-		pass
-
+		rules = con.getRule()
+		tmp = {}
+		for rule in rules:
+			values = rules[rule]
+			rule = unicode(rule)
+			if values == list:
+				print 
+			else:
+				print 
+			
 		
 
 if __name__ == '__main__':
-	filename = '../mq_data/process_data/data.csv'
+	#filename = '../mq_data/process_data/data.csv'
 	rule =  {'Gender':'Male','Age':20,'Location':['California','Nebraska']}
-	df = pd.read_csv(filename)
+	#df = pd.read_csv(filename)
 	#print df.describe()
-	con = Condition(rule)
-	print con.extract(df)
-	'''
+	#con = Condition(rule)
+	#print con.extract(df)
+	
 	filename = '../mq_data/process_data/data.csv'
-	fdpath = '../mq_data/process_data/data.fd'
-	fd = FieldDict(fdpath)
-	#fd.train(filename,missing_value = np.nan)
-	fd.check()
-	'''
+	#fdpath = '../mq_data/process_data/data.fd'
+	#fd = FieldDict(fdpath)
+	fd = FieldDict()
+	fd.train(filename,missing_value = np.nan)
+	#print fd.parse(con)
 		
