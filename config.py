@@ -6,7 +6,7 @@ data_path = '../mq_data/'
 result_path = '../mq_result/'
 
 #pro/pro.py
-pro_path = '../../mq_data/process_data/'
+pro_path = data_path + 'process_data/'
 pro_data_path = pro_path + 'data.csv'
 pro_middle_0_path = pro_path + 'middledata_0.csv'
 pro_middle_freq_path = pro_path + 'middledata_frequent.csv'
@@ -18,7 +18,7 @@ protp_middle_0_path = pro_path + 'middledata_0_twoparty.csv'
 protp_middle_freq_path = pro_path + 'middledata_frequent_twoparty.csv'
 
 #fill/fill.py
-Path = '../../mq_data'
+Path = data_path
 Cluster_Result = Path + '/process_data/fulldata_xmeans.csv'
 Vote_Matrix = Path + '/topic_matric_origin.csv'
 Comment_Dir = Path + '/comments/'
