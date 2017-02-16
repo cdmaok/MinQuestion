@@ -20,7 +20,19 @@ class Condition:
 
 	def add_lables(self,df):
 		for index,row in df.iterrows():
-			print row
+			row['label'] = isFit(row,self.rules)
+			if row['label']: print row['User_name'],row['label']
+
+def isFit(row,rule):
+	flag = True
+	for key in rule:
+		value = rule[key]
+		if type(value) == list:
+			flag = True if row[key] in value else False
+		else:
+			flag = True if row[key] == value else False
+		if not flag:break
+	return flag
 	
 
 def hasKey(fd,value,missing_value):
@@ -93,7 +105,6 @@ class FieldDict:
 			rule = unicode(rule)
 			if type(values) == list:
 				intlist = [ self.fd[rule][v] for v in values]
-				print intlist
 				tmp[rule] = intlist
 			else:
 				values = str(values)
@@ -103,7 +114,8 @@ class FieldDict:
 		
 
 if __name__ == '__main__':
-	filename = '../mq_data/process_data/data.csv'
+	#filename = '../mq_data/process_data/data.csv'
+	filename = '../mq_data/process_data/data.csv.2int'
 	rule =  {'Gender':'Male','Age':20,'Location':['California','Nebraska']}
 	df = pd.read_csv(filename)
 	#print df.describe()
