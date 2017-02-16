@@ -9,6 +9,7 @@ from pro import pro_twoparty
 import sampling_method
 import pandas as pd
 import math,numpy
+import fs
 
 
 ## this file is to merge get pro and sampling method script file
@@ -147,14 +148,14 @@ def get_goal_file(probs_file,goal_file,origin_file):
 	df.to_csv(goal_file,index=False)
 	return df 
 	
-def main(df):
-	tree = sampling_method.TreeVoter(df)
+def main(df,num=10):
+	tree = fs.dtvoter(df,num)
 	tree.dt()
 
-	lo = sampling_method.lassoVoter(df)
-	lo.lasso()
+	lo = fs.lassovoter(df,num)
+	lo.l1()
 	
-	svm = sampling_method.SvmVoter(df)
+	svm = fs.svmvoter(df,num)
 	svm.svm()
 
 
@@ -172,7 +173,7 @@ if __name__ == '__main__':
 	#originfile = './user_topic_origin.csv'
 	#df,labels = MergeTopic(probs,originfile)
 	#df = processdf(df,labels)
-	csvname = './women_goalfile.csv'
+	csvname = '/home/yangying/mq_result/white_old_knn0_goal_twoparty_balan.csv'
 	#df.to_csv(csvname)
 	#csvname = './fs_file/fs_entropyvoter_en_200.csv'
 	df = pd.read_csv(csvname)
