@@ -103,18 +103,17 @@ class FieldDict:
 		
 
 if __name__ == '__main__':
-	#filename = '../mq_data/process_data/data.csv'
+	filename = '../mq_data/process_data/data.csv'
 	rule =  {'Gender':'Male','Age':20,'Location':['California','Nebraska']}
-	#df = pd.read_csv(filename)
+	df = pd.read_csv(filename)
 	#print df.describe()
 	con = Condition(rule)
 	#print con.extract(df)
 	
-	filename = '../mq_data/process_data/data.csv'
 	fdpath = '../mq_data/process_data/data.csv.fd'
 	fd = FieldDict(fdpath)
 	#fd = FieldDict()
 	#fd.train(filename,missing_value = np.nan)
 	newcon = fd.parse(con)
-	newcon
+	newcon.add_lables(df)
 		
