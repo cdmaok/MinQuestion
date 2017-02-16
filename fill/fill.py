@@ -21,15 +21,15 @@ import copy,random
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-
+import config
 '''TODO: fill with matrix factorization change Vote Matrix'''
 
-Path = '/home/yangying/mq_data/'
-Cluster_Result = Path + '/process_data/fulldata_xmeans.csv'
-Vote_Matrix = Path + '/topic_matric_origin.csv'
-Comment_Dir = Path + '/comments/'
-Filemodel = Path + '/wiki_doc2vec.bin'
-Stoplist = Path + 'SmartStoplist.txt'
+Path = config.Path
+Cluster_Result = config.Cluster_Result
+Vote_Matrix = config.Vote_Matrix
+Comment_Dir = config.Comment_Dir
+Filemodel = config.Filemodel
+Stoplist = config.Stoplist
 
 def group(label):
 	username = []

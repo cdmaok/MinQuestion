@@ -6,10 +6,11 @@ import sampling_method
 import classifier
 import sys
 import fill
+import config
 from fill import mc
 
-data_path = '../mq_data/'
-result_path = '../mq_result/'
+data_path = config.data_path
+result_path = config.result_path
 
 def probability(rule,probs_file,two_party=False):
 	merge.get_probs_file(rule,probs_file,two_party)
