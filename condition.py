@@ -18,6 +18,11 @@ class Condition:
 				df = df.ix[df[key] == value]
 		return df
 
+	def add_lables(self,df):
+		for index,row in df.iterrows():
+			print row
+	
+
 def hasKey(fd,value,missing_value):
 	if type(missing_value) == str:
 		return fd.has_key(value)
@@ -110,5 +115,6 @@ if __name__ == '__main__':
 	fd = FieldDict(fdpath)
 	#fd = FieldDict()
 	#fd.train(filename,missing_value = np.nan)
-	print fd.parse(con)
+	newcon = fd.parse(con)
+	newcon
 		
