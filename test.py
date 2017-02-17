@@ -28,14 +28,16 @@ def main():
 	
 	rule = {'Ethnicity':'White','Age':[40,50,60,70,80,90,100,110]}	
 	filename = result_path + 'white_old'
+	#rule = {'Gender':'Female'}	
+	#filename = result_path + 'women'
 	
 	#vote_matrix = 'topic_matric_origin.csv'
-	#vote_matrix ='topic_matric_origin_balan.csv'
-	vote_matrix = 'topic_matric_twoparty_balan.csv'
-	two_party = True		
+	vote_matrix ='topic_matric_origin_balan.csv'
+	#vote_matrix = 'topic_matric_twoparty_balan.csv'
+	two_party = False		
 	
-	fill_method = mc.fill_biscaler_whole
-	fill_method_name = 'biscaler'
+	fill_method = mc.fill_mice_whole
+	fill_method_name = 'mice'
 	threshold = 0	
 	
 	probs_file = filename +  '.pro'
@@ -50,7 +52,9 @@ def main():
 	
 	if not os.path.exists(goal_fill):
 		fill_matrix(origin_file,probs_file,goal_fill,origin_fill,fill_method,threshold)
-				
+	
+	if not os.path.exists(goal_file):			
+		merge.get_goal_file(probs_file,goal_file,origin_file)
 	
 	####### 2. begin ensemble_FeatureSelection
 	f_size = 10

@@ -100,3 +100,4 @@ doc2vec.model
 *.swl
 *.swm
 *.swn
+config.py

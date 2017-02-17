@@ -251,8 +251,8 @@ class GBDTVoter(threading.Thread):
 def getXY(df):
 	def replaceLabel(x):
 		x = int(x)
-		#tmp = 1 if x == 4 else -1
-		tmp = 1 if x == 1 else -1
+		tmp = 1 if x == 4 else -1
+		#tmp = 1 if x == 1 else -1
 		return tmp		
 	headers = list(df.columns)
 	start = headers.index('user_topic')
