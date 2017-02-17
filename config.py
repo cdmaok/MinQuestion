@@ -24,3 +24,7 @@ Vote_Matrix = Path + '/topic_matric_origin.csv'
 Comment_Dir = Path + '/comments/'
 Filemodel = Path + '/wiki_doc2vec.bin'
 Stoplist = Path + 'SmartStoplist.txt'
+
+#lp.py
+i2int_path = '../mq_data/process_data/data.csv.2int'
+fd_path = '../mq_data/process_data/data.csv.fd'

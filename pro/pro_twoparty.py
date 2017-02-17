@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import label_propagation
 from sklearn.preprocessing import OneHotEncoder
+import sys
+sys.path.insert(0,'..')
 import config
 data_path = config.protp_data_path
 middle_0_path = config.protp_middle_0_path

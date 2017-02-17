@@ -18,21 +18,44 @@ class Condition:
 				df = df.ix[df[key] == value]
 		return df
 
-	def add_lables(self,df):
-		for index,row in df.iterrows():
-			row['label'] = isFit(row,self.rules)
-			if row['label']: print row['User_name'],row['label']
+	def get_labels(self,df,missing_value=np.nan):
+		labels = [getLabel(row,self.rules,missing_value) for index,row in df.iterrows()]
+		return labels
 
-def isFit(row,rule):
+def isMissing(value,missing_value):
+	if type(missing_value) == str:
+		return missing_value == value
+	elif np.isnan(missing_value):
+		if type(value) == str:
+			return False
+		elif np.isnan(value):
+			return True
+		else:
+			return missing_value == value
+
+
+def getLabel(row,rule,missing_value):
+	'''
+	1: yes, -1: unknown 0: no
+	'''
+	status = 1
 	flag = True
 	for key in rule:
 		value = rule[key]
+		target = row[key]
+		if isMissing(target,missing_value):
+			status = -1
+			break
 		if type(value) == list:
 			flag = True if row[key] in value else False
 		else:
 			flag = True if row[key] == value else False
-		if not flag:break
-	return flag
+		if not flag:
+			status = 0
+			break
+
+	#return (row['User_name'],status)
+	return status
 	
 
 def hasKey(fd,value,missing_value):
@@ -75,9 +98,10 @@ class FieldDict:
 		m = df.as_matrix()
 		for f,v in enumerate(fields):
 			f += 1
-			self.fd[v] = {missing_value:0}
+			self.fd[v] = {}
 			for i in range(size):
 				value = m[i][f]
+				if isMissing(value,missing_value):continue
 				if not hasKey(self.fd[v],value,missing_value):
 					if type(value) == float: value = int(value)
 					tmp = len(self.fd[v])
@@ -127,5 +151,5 @@ if __name__ == '__main__':
 	#fd = FieldDict()
 	#fd.train(filename,missing_value = np.nan)
 	newcon = fd.parse(con)
-	newcon.add_lables(df)
+	print newcon.get_labels(df,np.nan)
 		
