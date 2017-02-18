@@ -15,6 +15,7 @@ from imblearn.over_sampling import ADASYN,SMOTE
 from sklearn.semi_supervised import LabelPropagation,LabelSpreading
 from sklearn.preprocessing import OneHotEncoder
 import scipy.sparse as sp
+import merge
 
 
 def process(rule):
@@ -60,7 +61,9 @@ def process(rule):
 	leftX = newX[unknown_index,:]
 	leftY = [-1]*len(unknown_index)
 	
-
+	if not (ld.has_key(1)  and ld.has_key(0)):
+		print 'the rule has no strictly fitable data'
+		return 
 	if ld[1] < ld[0] / 2:
 		## imbalance data,oversample the data
 		newX,newY = oversample(subX,subY)
@@ -99,11 +102,11 @@ def log_dict(cd):
 	
 def semi_supervised(newX,newY,leftX,leftY):
 	if sp.issparse(newX): newX = newX.toarray()
-	#label_prop_model = LabelPropagation(n_jobs=3)
-	label_prop_model = LabelSpreading(n_jobs=3)
-	label_prop_model.fit(newX,newY)
-	result = label_prop_model.predict_proba(leftX)
-	label = label_prop_model.predict(leftX)
+	#model = LabelPropagation(n_jobs=3)
+	model = LabelSpreading(n_jobs=3)
+	model.fit(newX,newY)
+	result = model.predict_proba(leftX)
+	print model.score(newX,newY)
 	return result[:,1].round(2)
 		
 def mergeIndex(known_index,unknown_index,added):
@@ -153,7 +156,7 @@ if __name__ == '__main__':
 	#rule =  {'Gender':'Male'}
 	
 	pro = process(rule)
-	print pro[0:100]
 	## you may use merge.log_probs to save the probability
+	merge.log_probs(pro,'./tmp')
 	
 	
