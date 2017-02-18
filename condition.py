@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import json
+import json,collections
 
 class Condition:
 	def __init__(self,rules):
@@ -18,8 +18,8 @@ class Condition:
 				df = df.ix[df[key] == value]
 		return df
 
-	def get_labels(self,df,missing_value=np.nan):
-		labels = [getLabel(row,self.rules,missing_value) for index,row in df.iterrows()]
+	def get_labels(self,df,missing_value=np.nan,v = 0):
+		labels = [getLabel(row,self.rules,missing_value,v) for index,row in df.iterrows()]
 		return labels
 
 def isMissing(value,missing_value):
@@ -34,27 +34,33 @@ def isMissing(value,missing_value):
 			return missing_value == value
 
 
-def getLabel(row,rule,missing_value):
+def getLabel(row,rule,missing_value,v):
 	'''
 	1: yes, -1: unknown 0: no
 	'''
-	status = 1
-	flag = True
+	status = 2
+	ans = []
+	if v== 1 and row['User_name'] == '3l3NA':
+		print 'test'
 	for key in rule:
 		value = rule[key]
 		target = row[key]
 		if isMissing(target,missing_value):
 			status = -1
-			break
-		if type(value) == list:
-			flag = True if row[key] in value else False
 		else:
-			flag = True if row[key] == value else False
-		if not flag:
-			status = 0
-			break
-
-	#return (row['User_name'],status)
+			if type(value) == list:
+				status = 1 if row[key] in value else 0
+			else:
+				status = 1 if row[key] == value else 0
+		ans.append(status)
+	if 0 in ans:
+		status = 0
+	elif -1 in ans:
+		status = -1
+	else:
+		status = 1
+	if v == 1 and status == 1:
+		print row['User_name'],ans
 	return status
 	
 
@@ -104,7 +110,7 @@ class FieldDict:
 				if isMissing(value,missing_value):continue
 				if not hasKey(self.fd[v],value,missing_value):
 					if type(value) == float: value = int(value)
-					tmp = len(self.fd[v])
+					tmp = len(self.fd[v])+1
 					self.fd[v][value] = tmp
 				new_value= getValue(self.fd[v],value,missing_value)
 				m[i][f] = new_value
@@ -141,6 +147,7 @@ if __name__ == '__main__':
 	#filename = '../mq_data/process_data/data.csv'
 	filename = '../mq_data/process_data/data.csv.2int'
 	rule =  {'Gender':'Male','Age':20,'Location':['California','Nebraska']}
+	#rule =  {'Gender':'Male'}
 	df = pd.read_csv(filename)
 	#print df.describe()
 	con = Condition(rule)
@@ -150,6 +157,8 @@ if __name__ == '__main__':
 	fd = FieldDict(fdpath)
 	#fd = FieldDict()
 	#fd.train(filename,missing_value = np.nan)
+
 	newcon = fd.parse(con)
-	print newcon.get_labels(df,np.nan)
+	l = newcon.get_labels(df,np.nan,v=1)
+	print collections.Counter(l)
 		

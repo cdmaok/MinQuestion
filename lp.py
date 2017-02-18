@@ -14,6 +14,7 @@ import collections
 from imblearn.over_sampling import ADASYN,SMOTE
 from sklearn.semi_supervised import LabelPropagation,LabelSpreading
 from sklearn.preprocessing import OneHotEncoder
+import scipy.sparse as sp
 
 
 def process(rule):
@@ -31,6 +32,7 @@ def process(rule):
 	## get X
 	columns = df.columns.values.tolist()
 	columns.remove('User_name')
+	names = list(df['User_name'])
 	X = df[columns].as_matrix().astype(np.float64)
 
 	## fill the X matrix
@@ -43,41 +45,66 @@ def process(rule):
 
 	## check whether the labels balance or not
 	ld = dict(collections.Counter(labels))
-	index = range(X.shape[0])
-	
-	newX = X
+	print ld
+		
+	## onehot
+	enc = OneHotEncoder()
+	newX = enc.fit_transform(X)
 	newY = labels
+	
+
+	## isolate the unknown labels part first
+	known_index,unknown_index,subX,subY = getSub(newX,newY)
+
+	## add the unknown label part
+	leftX = newX[unknown_index,:]
+	leftY = [-1]*len(unknown_index)
+	
 
 	if ld[1] < ld[0] / 2:
 		## imbalance data,oversample the data
-		known_index,unknown_index,subX,subY = getSub(X,labels)
-		## isolate the unknown labels part first
 		newX,newY = oversample(subX,subY)
 		
-		added = newX.shape[0] - subX.shape[0]
+		added = newX.shape[0] - subX.shape[0]		
 		
-		## add the unknown label part
-		leftX = X[unknown_index,:]
-		leftY = [-1]*len(unknown_index)
+		#index = mergeIndex(known_index,unknown_index,added)
 		
-		index = mergeIndex(known_index,unknown_index,added)
+	else:
+		newX = subX
+		newY = subY
 		
-		
-		newX = np.concatenate((newX,leftX),axis=0)
-		newY = np.concatenate((newY,leftY),axis=0)
-
-	## onehot
-	enc = OneHotEncoder()
-	newX = enc.fit_transform(newX)
-
 	## do the pred
-	semi_supervised(newX,newY)
+	result = semi_supervised(newX,newY,leftX,leftY)
 	
-def semi_supervised(newX,newY):
-	label_prop_model = LabelPropagation()
+	#rd = collections.Counter(list(result))
+	#log_dict(rd)
+	#np.savetxt('./tmp',result,fmt='%.2f')
+	result = mergeResult(labels,result)
+	tmp = [round(r,1) for r in result]
+	log_dict(collections.Counter(tmp))
+	return zip(names,result)
+
+def mergeResult(labels,result):
+	i = 0
+	for index,l in enumerate(labels):
+		if l == -1:
+			labels[index] = result[i]
+			i += 1
+	return labels	
+
+def log_dict(cd):
+	cd = dict(cd)
+	for key in cd:
+		print key,cd[key]
+	
+def semi_supervised(newX,newY,leftX,leftY):
+	if sp.issparse(newX): newX = newX.toarray()
+	#label_prop_model = LabelPropagation(n_jobs=3)
+	label_prop_model = LabelSpreading(n_jobs=3)
 	label_prop_model.fit(newX,newY)
-	result = label_prop_model.predict_proba(newX)
-	print result
+	result = label_prop_model.predict_proba(leftX)
+	label = label_prop_model.predict(leftX)
+	return result[:,1].round(2)
 		
 def mergeIndex(known_index,unknown_index,added):
 	lkn = len(known_index)
@@ -112,17 +139,21 @@ def getSub(X,Y):
 	return known_index,unknown_index,subX,subY
 
 def oversample(X,Y):
-	fm = ADASYN(random_state=42)
-	#fm = SMOTE()
-	newX,newY = fm.fit_sample(X,Y)
-	newX = newX.astype(np.int).astype(np.float64)
+	#fm = ADASYN(random_state=42)
+	print 'do the oversampling procedure'
+	fm = SMOTE()
+	newX,newY = fm.fit_sample(X.toarray(),Y)
+	#newX = newX.astype(np.int).astype(np.float64)
 	return newX,newY
 
 
 
 if __name__ == '__main__':
 	rule =  {'Gender':'Male','Age':20,'Location':['California','Nebraska']}
+	#rule =  {'Gender':'Male'}
 	
-	process(rule)
+	pro = process(rule)
+	print pro[0:100]
+	## you may use merge.log_probs to save the probability
 	
 	
