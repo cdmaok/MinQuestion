@@ -41,6 +41,32 @@ def accept_sampling(_list,_size = 0):
 			_indexes.append(_list[random_index][0])
 	return _indexes
 
+def accept_sampling_filter(_list,_size = 0):
+	def decide_size(_list):
+		size = 0
+		count = 0
+		for e in _list:
+			if e[1] == 1:
+				size += 1
+			elif e[1] < 0.5 and e[1] > 0:
+				count += 1
+		return size + count * 0.8
+		
+	if _size == 0:
+		# generate size automatically
+		_size = decide_size(_list)
+	_indexes = []
+	length = len(_list)
+	i = 0
+	while i < _size:
+		random_index = random.randint(0,length - 1)
+		pro = _list[random_index][1]
+		acc = random.uniform(0,1)
+		if pro > 0.5 and acc < pro:
+			i += 1
+			_indexes.append(_list[random_index][0])
+	return _indexes
+
 def goal_file(_list):	
 	#print len(_list)
 	_indexes = []

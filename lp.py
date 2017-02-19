@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import os
 from fill import mc
+from fill import util
 import collections
 from imblearn.over_sampling import ADASYN,SMOTE
 from sklearn.semi_supervised import LabelPropagation,LabelSpreading
@@ -64,7 +65,7 @@ def process(rule):
 	if not (ld.has_key(1)  and ld.has_key(0)):
 		print 'the rule has no strictly fitable data'
 		return 
-	if ld[1] < ld[0] / 2:
+	if util.isImBalance(ld):
 		## imbalance data,oversample the data
 		newX,newY = oversample(subX,subY)
 		
@@ -152,8 +153,8 @@ def oversample(X,Y):
 
 
 if __name__ == '__main__':
-	rule =  {'Gender':'Male','Age':20,'Location':['California','Nebraska']}
-	#rule =  {'Gender':'Male'}
+	#rule =  {'Gender':'Male','Age':20,'Location':['California','Nebraska']}
+	rule =  {'Gender':'Male'}
 	
 	pro = process(rule)
 	## you may use merge.log_probs to save the probability
