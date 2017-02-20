@@ -316,7 +316,7 @@ class rfvoter(threading.Thread):
 
 	def rf(self):
 		x,y = getXY(self.sampled_df)
-		x,y = over_sampling(x,y)
+		#x,y = over_sampling(x,y)
 		clf = RandomForestClassifier(criterion='entropy',max_depth=self.num)
 		clf.fit(x,y)
 		score = clf.feature_importances_

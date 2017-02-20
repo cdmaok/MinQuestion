@@ -79,6 +79,7 @@ def text(df):
 			writer.writerow([user[i],text[user[i]]])
 		else:
 			writer.writerow([user[i]])
+	writer.close()
 
 
 if __name__ == '__main__':
