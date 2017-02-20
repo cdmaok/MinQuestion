@@ -25,7 +25,12 @@ Comment_Dir = Path + '/comments/'
 Filemodel = Path + '/wiki_doc2vec.bin'
 Stoplist = Path + 'SmartStoplist.txt'
 
+
 #knntext/text_sim.py
 Text_path = data_path + 'text.csv'
 
+
+#lp.py
+i2int_path = '../mq_data/process_data/data.csv.2int'
+fd_path = '../mq_data/process_data/data.csv.fd'
 

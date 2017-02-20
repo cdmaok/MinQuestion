@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import label_propagation
 from sklearn.preprocessing import OneHotEncoder
+import sys
+sys.path.insert(0,'..')
 import config
 
 data_path = config.pro_data_path
@@ -172,7 +174,7 @@ if __name__=="__main__":
     #          'Michigan','Florida','Lowisiana','Ohio','Pennsyirania','Wisconsin','Arizona','Georgia','Indiana','Missour','North Carolina']
 
 
-    '''
+	'''
 	attr_num = 2 ##属性个数
     ind = [0 for j in xrange(attr_num)]
     ind[0] = attributes.index('Education')
@@ -184,9 +186,9 @@ if __name__=="__main__":
     feature[1] = ['$50,000 to $75,000','$35,000 to $50,000','$25,000 to $35,000','$75,000 to $100,000'] ##middle-class
 	'''
 
-    rule = {'Education':['High School','Some College','Associates Degree'],'Income':['$50,000 to $75,000','$35,000 to $50,000','$25,000 to $35,000','$75,000 to $100,000']}
+	rule = {'Education':['High School','Some College','Associates Degree'],'Income':['$50,000 to $75,000','$35,000 to $50,000','$25,000 to $35,000','$75,000 to $100,000']}
 
-    print getPro(rule)
+	print getPro(rule)
 
 
     # # 测试

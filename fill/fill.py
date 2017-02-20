@@ -21,6 +21,7 @@ import copy,random
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+sys.path.insert(0,'..')
 import config
 '''TODO: fill with matrix factorization change Vote Matrix'''
 

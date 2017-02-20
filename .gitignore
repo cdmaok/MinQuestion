@@ -102,3 +102,4 @@ doc2vec.model
 *.swn
 config.py
 test.py
+tmp
