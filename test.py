@@ -7,8 +7,8 @@ import classifier
 import sys
 import fill
 import config
+from knntext import text_sim
 from fill import mc
-
 data_path = config.data_path
 result_path = config.result_path
 
@@ -19,7 +19,8 @@ def fill_matrix(origin_file,probs_file,goal_fill,origin_fill,fill_method,thresho
 			
 	df = pd.read_csv(origin_file)	
 	#df = fill.fill(rule,df,fill_method,threshold)	
-	df = mc.fill_whole(fill_method,df)
+	#df = mc.fill_whole(fill_method,df)
+	df = text_sim.fill_whole(fill_method,df)
 	df.to_csv(origin_fill,index=False)		
 	merge.get_goal_file(probs_file,goal_fill,origin_fill)
 
@@ -31,13 +32,13 @@ def main():
 	#rule = {'Gender':'Female'}	
 	#filename = result_path + 'women'
 	
-	#vote_matrix = 'topic_matric_origin.csv'
-	vote_matrix ='topic_matric_origin_balan.csv'
+	vote_matrix = 'topic_matric_origin.csv'
+	#vote_matrix ='topic_matric_origin_balan.csv'
 	#vote_matrix = 'topic_matric_twoparty_balan.csv'
 	two_party = False		
 	
-	fill_method = mc.fill_mice_whole
-	fill_method_name = 'mice'
+	fill_method = text_sim.fill_knn_whole
+	fill_method_name = 'knntext'
 	threshold = 0	
 	
 	probs_file = filename +  '.pro'
@@ -59,15 +60,16 @@ def main():
 	####### 2. begin ensemble_FeatureSelection
 	f_size = 10
 	en = False
-	time =1		
-	fs_method_list = [4,5,6,3,0,2,1,8,9,7]
+	time =1	
+	#fs_method_list = [4,5,6,3,0,2,1,8,9,7]
+	fs_method_list = [4]
 	#[0 svmvoter, 1 lassovoter, 2 dtvoter, 3 Kbesetvoter,
 	# 4 sampling_method.EntropyVoterSimple, 5 VarianceVoter, 6 CorelationVoter, 7 WrapperVoter, 8 RndLassovoter, 9 GBDTvoter]
 	
 	origin_file = origin_fill    #choose fill>
 	goal_file = goal_fill 
 	
-	print '------',time,' time------fill:'+fill_method_name+' '+str(threshold)+'----ensemble:',en,'------'
+	print '------',time,' time------fill:'+fill_method_name+' '+str(threshold)+'-pos ---ensemble:',en,'------'
 	print goal_file
 	for method_type in fs_method_list:
 		if(en):

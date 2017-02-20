@@ -24,3 +24,8 @@ Vote_Matrix = Path + '/topic_matric_origin.csv'
 Comment_Dir = Path + '/comments/'
 Filemodel = Path + '/wiki_doc2vec.bin'
 Stoplist = Path + 'SmartStoplist.txt'
+
+#knntext/text_sim.py
+Text_path = data_path + 'text.csv'
+
+

@@ -7,10 +7,10 @@ import csv
 import os
 import json
 import knntext
-
-Comment_path = '/home/yangying/mq_data/comments'
-Text_path = '/home/yangying/mq_data/text.csv'
-Matric_path = '/home/yangying/mq_data/topic_matric_origin.csv'
+import config
+Comment_path = config.Comment_Dir
+Text_path = config.Text_path
+Matric_path = config.Vote_Matrix
 def fill_whole(f,df):
 	'''
 	fill the matrix with fancyimpute
@@ -68,7 +68,7 @@ def text(df):
 	user = []
 	for k in xrange(row):
 		user.append(f.iloc[k])
-	querylist = df.columns.values[1:-1]  #第一行
+	querylist = df.columns.values[1:-1]  #第一�?
 	querylist = [q.strip().decode('utf-8','ignore')  for q in list(querylist)]
 	text = context(querylist,user)
 	csvfile = file(Text_path,'wb')

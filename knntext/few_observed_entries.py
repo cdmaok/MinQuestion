@@ -13,17 +13,13 @@
 from __future__ import absolute_import, print_function, division
 import time
 import numpy as np
-import common
+from .common import knn_initialize
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
-import doc2vec
-
-Filemodel = '/home/yangying/mq_data/wiki_doc2vec.bin'
-#Filemodel = '/home/yangying/MinQuestion/knntext/doc2vec.model'
-Text_path = '/home/yangying/mq_data/text.csv'
-# Filemodel = './wiki_doc2vec.bin'
-# Filemodel = './doc2vec.model'
-# Text_path = './text_twoparty.csv'
+from .doc2vec import getvector
+import config
+Filemodel = config.Filemodel
+Text_path = config.Text_path
 def doc2vec_method(df):
     df = df.replace(np.nan,'')
     text = df.iloc[:,1]
@@ -33,7 +29,7 @@ def doc2vec_method(df):
     # doc2vec.train(text,filemodel)
     # m = doc2vec.getMatrix('doc2vec.matrix',filemodel)
     # vectors = [list(doc2vec.getvector(q,filemodel)) for q in text]
-    vectors = [list(doc2vec.getvector(q,Filemodel)) for q in text]
+    vectors = [list(getvector(q,Filemodel)) for q in text]
     m = np.asarray(vectors)
     sim = cosine_similarity(m,m)
     return sim
@@ -51,7 +47,7 @@ def knn_impute_few_observed(X, missing_mask, k, verbose=False, print_interval=10
     missing_mask_column_major = np.asarray(missing_mask, order="F")
     observed_mask_column_major = ~missing_mask_column_major
     X_column_major = X.copy(order="F")
-    X_row_major, D = common.knn_initialize(X, missing_mask, verbose=verbose)
+    X_row_major, D = knn_initialize(X, missing_mask, verbose=verbose)
 
     # get rid of infinities, replace them with a very large number
     # finite_distance_distance_mask = np.isfinite(D)

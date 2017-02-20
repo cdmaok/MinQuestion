@@ -13,9 +13,9 @@
 from __future__ import absolute_import, print_function, division
 import numpy as np
 
-from few_observed_entries import knn_impute_few_observed
+from .few_observed_entries import knn_impute_few_observed
 
-from solver import Solver
+from .solver import Solver
 
 class KNN(Solver):
     """

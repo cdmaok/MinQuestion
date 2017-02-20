@@ -11,8 +11,7 @@
 # limitations under the License.
 
 from __future__ import absolute_import, print_function, division
-# from .normalized_distance import all_pairs_normalized_distances
-import normalized_distance
+#from .normalized_distance import all_pairs_normalized_distances
 import logging
 
 import numpy as np
@@ -38,12 +37,12 @@ def knn_initialize(X, missing_mask, verbose=False):
         # if the missing values have already been zero-filled need
         # to put NaN's back in the data matrix for the distances function
         X_row_major[missing_mask] = np.nan
-    D = normalized_distance.all_pairs_normalized_distances(X_row_major, verbose=verbose)
+   # D = all_pairs_normalized_distances(X_row_major, verbose=verbose)
     # set diagonal of distance matrix to infinity since we don't want
     # points considering themselves as neighbors
-    for i in range(X.shape[0]):
-        D[i, i] = np.inf
-    return X_row_major, D
+    #for i in range(X.shape[0]):
+     #   D[i, i] = np.inf
+    return X_row_major, X
 
 def generate_random_column_samples(column):
     col_mask = np.isnan(column)

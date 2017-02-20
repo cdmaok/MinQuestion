@@ -136,7 +136,7 @@ class EntropyVoterSimple(threading.Thread):
 				#choose_new.any()
 				if(choose_new.any()):
 					for k1, group in sampled_df.groupby(choose_new):			
-						#print("------group-----",k1,len(group),len(sampled_df))
+						print("------group-----",k1,len(group),len(sampled_df))
 						p_group = len(group)/len(sampled_df)
 						p = group.Class.value_counts()/len(group)
 						sum =0
