@@ -41,6 +41,30 @@ def accept_sampling(_list,_size = 0):
 			_indexes.append(_list[random_index][0])
 	return _indexes
 
+def pos_sampling(_list,_size = 0):
+	def decide_size(_list):
+		size = 0
+		count = 0
+		for e in _list:
+			if e[1] <= 1 and e[1] > 0.5:
+				size += 1
+		return size * 0.8
+		
+	if _size == 0:
+		# generate size automatically
+		_size = decide_size(_list)
+	_indexes = []
+	length = len(_list)
+	i = 0
+	while i < _size:
+		random_index = random.randint(0,length - 1)
+		pro = _list[random_index][1]
+		acc = random.uniform(0.5,1)
+		if acc < pro:
+			i += 1
+			_indexes.append(_list[random_index][0])
+	return _indexes	
+	
 def goal_file(_list):	
 	#print len(_list)
 	_indexes = []
@@ -66,7 +90,8 @@ def goal_all(_list):
 	
 	
 def MergeTopic(probs,filename,multi = True):
-	sampled_names = accept_sampling(probs)
+	#sampled_names = accept_sampling(probs)
+	sampled_names = pos_sampling(probs)
 	df = pd.read_csv(filename)
 	labels = list(df.drop_duplicates(subset='Class').Class)
 	condict = {'user_topic':sampled_names}

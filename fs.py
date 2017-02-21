@@ -2,7 +2,7 @@
 
 ## Notice: PCA can only extract feature num which is the minimun of sample_num and feature num
 import numpy as np
-import threading
+import threading,collections
 import pandas as pd
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
@@ -15,8 +15,10 @@ from sklearn import linear_model
 from sklearn import svm
 from sklearn import tree
 from sklearn.feature_selection import RFE
+from imblearn.over_sampling import ADASYN,SMOTE
 import sampling_method
 import math
+from fill import util
 
 
 class svmvoter(threading.Thread):
@@ -251,8 +253,8 @@ class GBDTVoter(threading.Thread):
 def getXY(df):
 	def replaceLabel(x):
 		x = int(x)
-		#tmp = 1 if x == 4 else -1
-		tmp = 1 if x == 1 else -1
+		tmp = 1 if x == 4 else -1
+		#tmp = 1 if x == 1 else -1
 		return tmp		
 	headers = list(df.columns)
 	start = headers.index('user_topic')
@@ -314,6 +316,7 @@ class rfvoter(threading.Thread):
 
 	def rf(self):
 		x,y = getXY(self.sampled_df)
+		#x,y = over_sampling(x,y)
 		clf = RandomForestClassifier(criterion='entropy',max_depth=self.num)
 		clf.fit(x,y)
 		score = clf.feature_importances_
@@ -332,11 +335,24 @@ def get_method(type=0):
 
 	return method_list[type]
 	
-	
+def over_sampling(x,y):
+	ld = dict(collections.Counter(y))
+	if len(ld) < 2:
+		print 'warning,no enough data',ld
+		print 'please add some more instance'
+		return x,y
+	else:
+		if util.isImBalance(ld):
+			print 'do the oversampling procedure'
+			fm = ADASYN()
+			return fm.fit_sample(x,y)
+		else:
+			return x,y
+		
 
 if __name__ == '__main__':
 	#filename = ('./women_goal_fill.csv')
-	filename = ('./en_file/white_old_goal_fill.csv')
+	filename = ('../mq_result/white_old_sim0_goal_origin_balan.csv')
 	df = pd.read_csv(filename)
 	#pv = Kbesetvoter(df,10)
 	#pv.kbest()

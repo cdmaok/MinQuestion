@@ -64,6 +64,17 @@ def parse(v):
 	else:
 		return -1
 
+def isImBalance(ld):
+	keys = ld.keys()
+	major = ld[keys[0]]
+	minor = ld[keys[1]]
+	if major < minor:
+		tmp = minor
+		minor = major
+		major = tmp
+	ratio = float(minor) / major
+	return ratio < 0.8
+
 class ValueDict:
 	
 	def __init__(self,match,dt):
