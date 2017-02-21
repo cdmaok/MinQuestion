@@ -1,0 +1,8 @@
+rule = {'Occupation':['Labor','Retail','Sales','Self-Employed','Transportation']}
+rule = {'Occupation':['Student']}
+rule = {'Occupation':['Retired']}
+rule = {'Income':['Less than $25,000','$25,000 to $35,000','$35,000 to $50,000']}
+rule = {'Gender':'Female',Ethnicity:'White'}
+homo_group
+rule = {'Education':['Graduate Degree','Post Doctoral']}
+
