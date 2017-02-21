@@ -19,7 +19,7 @@ from imblearn.over_sampling import ADASYN,SMOTE
 import sampling_method
 import math
 from fill import util
-
+import dt2
 
 class svmvoter(threading.Thread):
 	'''
@@ -216,6 +216,7 @@ class WrapperVoter(threading.Thread):
 
 	def rfe(self):
 		x,y = getXY(self.sampled_df)
+		x,y = over_sampling(x,y)
 		rfe = RFE(estimator=self.base,n_features_to_select=self.num)
 		rfe.fit(x,y)
 		self.topics = list(rfe.get_support(indices=True))
@@ -331,7 +332,7 @@ class rfvoter(threading.Thread):
 
 def get_method(type=0):
 
-	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter]
+	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter,dt2.DecisionTree]
 
 	return method_list[type]
 	

@@ -12,6 +12,7 @@ from sklearn.preprocessing import Imputer
 from sklearn import linear_model
 from sklearn.model_selection import cross_val_score
 from sklearn import svm
+import pydotplus
 import collections
 import merge
 import sys
@@ -135,7 +136,7 @@ class EntropyVoterSimple(threading.Thread):
 				#choose_new.any()
 				if(choose_new.any()):
 					for k1, group in sampled_df.groupby(choose_new):			
-						print("------group-----",k1,len(group),len(sampled_df))
+						#print("------group-----",k1,len(group),len(sampled_df))
 						p_group = len(group)/len(sampled_df)
 						p = group.Class.value_counts()/len(group)
 						sum =0
