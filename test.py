@@ -31,13 +31,13 @@ def main():
 	#rule = {'Gender':'Female'}	
 	#filename = result_path + 'women'
 	
-	vote_matrix = 'topic_matric_origin.csv'
-	#vote_matrix ='topic_matric_origin_balan.csv'
+	#vote_matrix = 'topic_matric_origin.csv'
+	vote_matrix ='topic_matric_origin_balan.csv'
 	#vote_matrix = 'topic_matric_twoparty_balan.csv'
 	two_party = False		
 	
-	fill_method = mc.fill_svd_whole
-	fill_method_name = 'svd'
+	fill_method = mc.fill_mice_whole
+	fill_method_name = 'mice'
 	threshold = 0	
 	
 	probs_file = filename +  '.pro'
