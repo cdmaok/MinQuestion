@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import cross_val_score
 from sklearn import svm
 from sklearn import tree
 from sklearn import linear_model
-from sklearn.model_selection import cross_val_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
@@ -102,6 +102,7 @@ def getXY(df):
 def main(feature,csvname,num=10):
 	
 	feature = [i + 1 for i in feature]
+	#feature = [4496, 2468, 1056, 5149, 1442, 4144, 2870, 2929, 2162, 4746]
 	print feature
 	#csvname = './white_old_goalfile.csv'
 	goal_df = pd.read_csv(csvname,dtype={"user_topic":str,"Class":str})	
@@ -124,7 +125,8 @@ def main(feature,csvname,num=10):
 		
 
 if __name__ == '__main__':
-	feature = [26, 448, 47, 818, 180, 610, 1708, 698, 968, 100]
-	csvname = './doc2vec/white_old_goal_fill.csv'
+	feature = [4496, 2468, 1056, 5149, 1442, 4144, 2870, 2929, 2162, 4746]
+	#csvname = './doc2vec/white_old_goal_fill.csv'
+	csvname = '../mq_result/white_old_knntext0_goal_origin.csv'
 	#csvname = './test/iris.csv'
 	main(feature,csvname)

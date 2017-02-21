@@ -32,8 +32,8 @@ def main():
 	#rule = {'Gender':'Female'}	
 	#filename = result_path + 'women'
 	
-	vote_matrix = 'topic_matric_origin.csv'
-	#vote_matrix ='topic_matric_origin_balan.csv'
+	#vote_matrix = 'topic_matric_origin.csv'
+	vote_matrix ='topic_matric_origin_balan.csv'
 	#vote_matrix = 'topic_matric_twoparty_balan.csv'
 	two_party = False		
 	
@@ -59,12 +59,12 @@ def main():
 	
 	####### 2. begin ensemble_FeatureSelection
 	f_size = 10
-	en = False
-	time =1	
-	#fs_method_list = [4,5,6,3,0,2,1,8,9,7]
-	fs_method_list = [4]
+	en = True
+	time =10	
+	#fs_method_list = [4,5,6,3,0,2,1,8,9,7,10]
+	fs_method_list = [11]
 	#[0 svmvoter, 1 lassovoter, 2 dtvoter, 3 Kbesetvoter,
-	# 4 sampling_method.EntropyVoterSimple, 5 VarianceVoter, 6 CorelationVoter, 7 WrapperVoter, 8 RndLassovoter, 9 GBDTvoter]
+	# 4 sampling_method.EntropyVoterSimple, 5 VarianceVoter, 6 CorelationVoter, 7 WrapperVoter, 8 RndLassovoter, 9 GBDTvoter, 10 rfvoter]
 	
 	origin_file = origin_fill    #choose fill>
 	goal_file = goal_fill 
