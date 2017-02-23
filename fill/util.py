@@ -27,6 +27,17 @@ def most_commom(elements):
 	else:	
 		return ele
 	
+def isMissing(value,missing_value):
+        if type(missing_value) == str:
+                return missing_value == value
+        elif np.isnan(missing_value):
+                if type(value) == str:
+                        return False
+                elif np.isnan(value):
+                        return True
+                else:
+                        return missing_value == value
+
 	
 
 def NoneElement():

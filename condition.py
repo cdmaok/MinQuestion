@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import json,collections
+from fill import util
 
 class Condition:
 	def __init__(self,rules):
@@ -22,16 +23,6 @@ class Condition:
 		labels = [getLabel(row,self.rules,missing_value,v) for index,row in df.iterrows()]
 		return labels
 
-def isMissing(value,missing_value):
-	if type(missing_value) == str:
-		return missing_value == value
-	elif np.isnan(missing_value):
-		if type(value) == str:
-			return False
-		elif np.isnan(value):
-			return True
-		else:
-			return missing_value == value
 
 
 def getLabel(row,rule,missing_value,v):
@@ -45,7 +36,7 @@ def getLabel(row,rule,missing_value,v):
 	for key in rule:
 		value = rule[key]
 		target = row[key]
-		if isMissing(target,missing_value):
+		if util.isMissing(target,missing_value):
 			status = -1
 		else:
 			if type(value) == list:
@@ -107,7 +98,7 @@ class FieldDict:
 			self.fd[v] = {}
 			for i in range(size):
 				value = m[i][f]
-				if isMissing(value,missing_value):continue
+				if util.isMissing(value,missing_value):continue
 				if not hasKey(self.fd[v],value,missing_value):
 					if type(value) == float: value = int(value)
 					tmp = len(self.fd[v])+1
