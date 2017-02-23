@@ -5,4 +5,6 @@ rule = {'Income':['Less than $25,000','$25,000 to $35,000','$35,000 to $50,000']
 rule = {'Gender':'Female',Ethnicity:'White'}
 homo_group
 rule = {'Education':['Graduate Degree','Post Doctoral']}
-
+rule = {'Age':[10,20]}
+rule = {'Age':[30,40,50]}
+rule = {'Age':[60,70,80,90,100,110]}

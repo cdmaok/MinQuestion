@@ -76,7 +76,7 @@ def KNNClassifier(sampled_df):
 def LRClassifier(sampled_df):
 	print 'LR'
 	x,y = getXY(sampled_df)
-	clf = LogisticRegression(penalty='l1')
+	clf = LogisticRegression(penalty='l2')
 	accuracy = cross_val_score(clf, x,y, cv=5)
 	precision = cross_val_score(clf, x,y, cv=5, scoring='precision')
 	f1 = cross_val_score(clf, x,y, cv=5, scoring='f1')

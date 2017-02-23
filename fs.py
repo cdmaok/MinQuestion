@@ -224,7 +224,30 @@ class WrapperVoter(threading.Thread):
 	
 	def getTopic(self):
 		return self.topics		
-		
+
+class WrapperDTVoter(threading.Thread):
+	
+	def __init__(self,sampled_df,f_num,base=tree.DecisionTreeClassifier(criterion='entropy',max_depth=10)):
+		threading.Thread.__init__(self)
+		self.sampled_df = sampled_df
+		self.topics = []
+		self.num = f_num
+		self.base = base
+	
+	def run(self):
+		self.rfe()
+
+
+	def rfe(self):
+		x,y = getXY(self.sampled_df)
+		x,y = over_sampling(x,y)
+		rfe = RFE(estimator=self.base,n_features_to_select=self.num)
+		rfe.fit(x,y)
+		self.topics = list(rfe.get_support(indices=True))
+
+	
+	def getTopic(self):
+		return self.topics		
 
 class GBDTVoter(threading.Thread):
 	
@@ -332,7 +355,7 @@ class rfvoter(threading.Thread):
 
 def get_method(type=0):
 
-	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter,dt2.DecisionTree]
+	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter,dt2.DecisionTree,WrapperDTVoter]
 
 	return method_list[type]
 	

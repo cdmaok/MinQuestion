@@ -3,7 +3,7 @@
 ### this file contains only path
 #test.py
 data_path = '../mq_data/'
-result_path = '../mq_result/'
+result_path = '../mq_result/fw/'
 
 #pro/pro.py
 pro_path = data_path + 'process_data/'
