@@ -27,13 +27,19 @@ def fill_matrix(origin_file,probs_file,goal_fill,origin_fill,fill_method,thresho
 
 def main():
 	
-	rule = {'Ethnicity':'White','Age':[40,50,60,70,80,90,100,110]}	
-	filename = result_path + 'white_old'
+	#rule = {'Ethnicity':'White','Age':[40,50,60,70,80,90,100,110]}	
+	#rule = {'Occupation':['Student']}
+	#rule = {'Age':[10,20]}
+	#rule = {'Age':[30,40,50]}
+	#rule = {'Age':[60,70,80,90,100,110]}
+	rule = {'Education':['Graduate Degree','Post Doctoral']}
+	filename = result_path + 'edu'
+	
 	#rule = {'Gender':'Female'}	
 	#filename = result_path + 'women'
 	
-	#vote_matrix = 'topic_matric_origin.csv'
-	vote_matrix ='topic_matric_origin_balan.csv'
+	vote_matrix = 'topic_matric_origin.csv'	
+	#vote_matrix ='topic_matric_origin_balan.csv'
 	#vote_matrix = 'topic_matric_twoparty_balan.csv'
 	two_party = False		
 	
@@ -49,13 +55,15 @@ def main():
 		
 	origin_file = data_path + vote_matrix
 	vote_matrix = vote_matrix.replace('topic_matric','')		
-	origin_fill = filename + '_'+ fill_method_name + str(threshold) + vote_matrix
+	#origin_fill = filename + '_'+ fill_method_name + str(threshold) + vote_matrix
 	goal_file = filename + '_goal' + vote_matrix
 	goal_fill = filename +'_'+fill_method_name + str(threshold)+ '_goal'+vote_matrix
-	
-	if not os.path.exists(goal_fill):
+	origin_fill = '../mq_result/knntext0_origin.csv'
+	#goal_fill = '../mq_result/knntext0_goal_origin.csv'
+	if not os.path.exists(origin_fill):
 		fill_matrix(origin_file,probs_file,goal_fill,origin_fill,fill_method,threshold)
-	
+	if not os.path.exists(goal_fill):
+		merge.get_goal_file(probs_file,goal_fill,origin_fill)
 	if not os.path.exists(goal_file):			
 		merge.get_goal_file(probs_file,goal_file,origin_file)
 	
@@ -63,8 +71,8 @@ def main():
 	f_size = 10
 	en = True
 	time =10	
-	#fs_method_list = [4,5,6,3,0,2,1,8,9,7,10]
-	fs_method_list = [11]
+	fs_method_list = [4,5,6,3,0,2,1,8,9,7,10,11]
+	#fs_method_list = [11]
 	#[0 svmvoter, 1 lassovoter, 2 dtvoter, 3 Kbesetvoter,
 	# 4 sampling_method.EntropyVoterSimple, 5 VarianceVoter, 6 CorelationVoter, 7 WrapperVoter, 8 RndLassovoter, 9 GBDTvoter, 10 rfvoter]
 	
