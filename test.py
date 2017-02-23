@@ -33,6 +33,7 @@ def main():
 	#rule = {'Income':['Less than $25,000','$25,000 to $35,000','$35,000 to $50,000']}
 	#rule = {'Gender':'Female','Ethnicity':'White'}
 	#filename = result_path + 'fw'
+	
 	#rule = {'Gender':'Female'}	
 	filename = result_path + 'white_old'
 	
@@ -56,6 +57,7 @@ def main():
  
 	#origin_file = data_path + vote_matrix
 	threshold = 0.6
+
 	
 	probs_file = filename +  '.pro'
 	if not os.path.exists(probs_file):
@@ -63,10 +65,12 @@ def main():
 		
 	
 	vote_matrix = vote_matrix.replace('topic_matric','')		
+
 	origin_fill = filename + '_'+ fill_method_name + str(threshold) + vote_matrix
 	#goal_file = filename + '_goal' + vote_matrix
 	#origin_fill = '../mq_result/knntext0_origin.csv'
 	goal_fill = filename +'_'+fill_method_name + str(threshold)+ '_goal'+vote_matrix
+
 	#goal_fill = '../mq_result/knntext0_goal_origin.csv'
 	if not os.path.exists(origin_fill):
 		fill_matrix(origin_file,probs_file,goal_fill,origin_fill,fill_method,threshold)

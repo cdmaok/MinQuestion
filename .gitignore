@@ -100,5 +100,7 @@ doc2vec.model
 *.swl
 *.swm
 *.swn
+
 test.py
+config.py
 tmp
