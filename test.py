@@ -43,20 +43,20 @@ def main():
 	two_party = False		
 	
   
-	df = pd.read_csv(data_path + vote_matrix)
+	#df = pd.read_csv(data_path + vote_matrix)
 	method = 'doc2vec'
 	threshold = 0.6
-	origin_file = data_path + str(threshold) + '_'+ 'origin_fill.csv'
+	#origin_file = data_path + str(threshold) + '_'+ 'origin_fill.csv'
 	#if not os.path.exists(origin_file):
-	df = fill.fill(rule,df,method,threshold)
-	df.to_csv(origin_file,index=False)
+	#df = fill.fill(rule,df,method,threshold)
+	#df.to_csv(origin_file,index=False)
 	
 	print "doc fill complete"
 	fill_method = mc.fill_knn_whole
 	fill_method_name = 'knntext'
  
-	#origin_file = data_path + vote_matrix
-	threshold = 0.6
+	origin_file = data_path + vote_matrix
+	threshold = 0
 
 	
 	probs_file = filename +  '.pro'
@@ -67,7 +67,7 @@ def main():
 	vote_matrix = vote_matrix.replace('topic_matric','')		
 
 	origin_fill = filename + '_'+ fill_method_name + str(threshold) + vote_matrix
-	#goal_file = filename + '_goal' + vote_matrix
+	goal_file = filename + '_goal' + vote_matrix
 	#origin_fill = '../mq_result/knntext0_origin.csv'
 	goal_fill = filename +'_'+fill_method_name + str(threshold)+ '_goal'+vote_matrix
 
@@ -81,24 +81,26 @@ def main():
 	
 	####### 2. begin ensemble_FeatureSelection
 	f_size = 10
-	en = True
-	time =10	
-	fs_method_list = [4,5,6,3,0,2,1,8,9,7,10,11,12]
-	#fs_method_list = [11,12]
-	#[0 svmvoter, 1 lassovoter, 2 dtvoter, 3 Kbesetvoter,
-	# 4 sampling_method.EntropyVoterSimple, 5 VarianceVoter, 6 CorelationVoter, 7 WrapperVoter, 8 RndLassovoter, 9 GBDTvoter, 10 rfvoter,11 dt2,12 wrapperDT]
 	
-	origin_file = origin_fill    #choose fill>
-	goal_file = goal_fill 
-	
-	print '------',time,' time------fill:'+fill_method_name+' '+str(threshold)+'-pos ---ensemble:',en,'------'
-	print goal_file
-	for method_type in fs_method_list:
-		if(en):
-			feature = sampling_method.emsemble_sampling(time,en,probs_file,origin_file,method_type,f_size)
-		else:
-			feature = sampling_method.emsemble_sampling(time,en,probs_file,goal_file,method_type,f_size)
-		classifier.main(feature,goal_file,f_size)
+	for f_size in range(10,201,10):		
+		en = True
+		time =10	
+		#fs_method_list = [4,5,6,3,0,2,1,8,9,7,10,11,12]
+		fs_method_list = [0]
+		#[0 svmvoter, 1 lassovoter, 2 dtvoter, 3 Kbesetvoter,
+		# 4 sampling_method.EntropyVoterSimple, 5 VarianceVoter, 6 CorelationVoter, 7 WrapperVoter, 8 RndLassovoter, 9 GBDTvoter, 10 rfvoter,11 dt2,12 wrapperDT]
+		
+		origin_file = origin_fill    #choose fill>
+		goal_file = goal_fill 
+		
+		print '------',time,' time---f_size: '+str(f_size)+'---fill:'+fill_method_name+str(threshold)+'----pos ---ensemble:',en,'------'
+		print goal_file
+		for method_type in fs_method_list:
+			if(en):
+				feature = sampling_method.emsemble_sampling(time,en,probs_file,origin_file,method_type,f_size)
+			else:
+				feature = sampling_method.emsemble_sampling(time,en,probs_file,goal_file,method_type,f_size)
+			classifier.main(feature,goal_file,f_size)
 	
 		
 
