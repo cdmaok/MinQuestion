@@ -180,7 +180,7 @@ def emsemble_sampling(ti,en,probs_file,origin_file,type=0,f_size=10):
     print str(fs_method)
     #do 10 times, according to the attribute probability prediction to sampling each time
     for t in time:
-		print("----------------------iteration------------------- no.",t+1)
+		#print("----------------------iteration------------------- no.",t+1)
 
 		if(en):
 			sampled_df = merge.get_file(probs_file,origin_file)

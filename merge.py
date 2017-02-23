@@ -163,7 +163,7 @@ def get_file(probs_file,origin_file):
     probs = read_probs(probs_file)	
     df,labels = MergeTopic(probs,origin_file)
     sampled_df = processdf(df,labels)
-    print(sampled_df['Class'].value_counts())
+    #print(sampled_df['Class'].value_counts())
     return sampled_df	
 	
 def get_goal_file(probs_file,goal_file,origin_file):	

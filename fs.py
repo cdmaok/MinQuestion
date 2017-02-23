@@ -21,6 +21,31 @@ import math
 from fill import util
 import dt2
 
+## get the first n elements of array,but if array[n-1] == array[n],then the (n+1)th element will be return.
+def cut(score,index,size):
+	src = score[index[size - 1]]
+	total = len(score)
+	ans = size - 1
+	for i in range(size,total):
+		tar = score[index[i]]
+		if not isEqual(src,tar):
+			break
+		ans = i
+	if size != ans: print 'expanding to' ,ans
+	return ans
+	
+def isEqual(a1,a2):
+	if abs(a1-a2)< 0.001:
+		return True
+	return False
+	
+
+def getHighScoreIndex(score,size):
+	index  = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
+	expand = cut(score,index,size)
+	return index[0:expand]
+	
+
 class svmvoter(threading.Thread):
 	'''
 	http://scikit-learn.org/stable/modules/feature_selection.html
@@ -46,9 +71,7 @@ class svmvoter(threading.Thread):
 		clf.fit(x,y)
 		score = clf.coef_[0]
 		score = list(score)
-		t = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
-		self.topics = t[:self.num]
-		pass
+		self.topics = getHighScoreIndex(score,self.num)
 
 
 	
@@ -82,10 +105,7 @@ class lassovoter(threading.Thread):
 		clf.fit(x,y)
 		score = clf.coef_[0]
 		score = list(score)
-		t = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
-		#print score
-		self.topics = t[:self.num]
-		pass
+		self.topics = getHighScoreIndex(score,self.num)
 
 
 	
@@ -118,9 +138,7 @@ class dtvoter(threading.Thread):
 		clf = tree.DecisionTreeClassifier(criterion='entropy',max_depth=self.num)
 		clf.fit(x,y)
 		score = clf.feature_importances_
-		t = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
-		self.topics = t[:self.num]
-		pass
+		self.topics = getHighScoreIndex(score,self.num)
 
 
 	
@@ -148,8 +166,7 @@ class Kbesetvoter(threading.Thread):
 		kb = SelectKBest(self.func, k=self.num)
 		kb.fit_transform(x, y)
 		score = kb.scores_ 
-		t = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
-		self.topics = t[:self.num]
+		self.topics = getHighScoreIndex(score,self.num)
 
 
 	
@@ -171,9 +188,8 @@ class VarianceVoter(threading.Thread):
 	def variance(self):
 		x,y = getXY(self.sampled_df)
 		v = list(np.var(x,axis=0))
-		index = sorted(range(len(v)),key = lambda i:v[i],reverse=True)
-		#print index
-		self.topics = index[:self.num]
+		score = sorted(range(len(v)),key = lambda i:v[i],reverse=True)
+		self.topics = getHighScoreIndex(score,self.num)
 	
 	def getTopic(self):
 		return self.topics
@@ -195,8 +211,8 @@ class CorelationVoter(threading.Thread):
 		x,y = getXY(self.sampled_df)
 		row,cols = x.shape
 		v = [ np.corrcoef(x[:,c],y)[0,1] for c in range(cols)]
-		index = sorted(range(len(v)),key = lambda i:v[i] if not math.isnan(v[i]) else -2,reverse=True)
-		self.topics = index[:self.num]
+		score = sorted(range(len(v)),key = lambda i:v[i] if not math.isnan(v[i]) else -2,reverse=True)
+		self.topics = getHighScoreIndex(score,self.num)
 	
 	def getTopic(self):
 		return self.topics
@@ -267,8 +283,7 @@ class GBDTVoter(threading.Thread):
 		dt.fit(x,y)
 		#print dt.feature_importances_
 		score = list(dt.feature_importances_)  
-		t = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
-		self.topics = t[:self.num]
+		self.topics = getHighScoreIndex(score,self.num)
 
 	
 	def getTopic(self):
@@ -311,9 +326,7 @@ class RndLassovoter(threading.Thread):
 		clf = linear_model.RandomizedLogisticRegression()
 		clf.fit(x,y)
 		score = list(clf.scores_)
-		t = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
-		self.topics = t[:self.num]
-		pass
+		self.topics = getHighScoreIndex(score,self.num)
 
 
 	
@@ -344,10 +357,7 @@ class rfvoter(threading.Thread):
 		clf = RandomForestClassifier(criterion='entropy',max_depth=self.num)
 		clf.fit(x,y)
 		score = clf.feature_importances_
-		t = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
-		self.topics = t[:self.num]
-		pass
-
+		self.topics = getHighScoreIndex(score,self.num)
 
 	
 	def getTopic(self):
@@ -384,19 +394,19 @@ if __name__ == '__main__':
 	#pv.l1()
 	#pv = svmvoter(df,10)
 	#pv.svm()
-	#pv = dtvoter(df,10)
-	#pv.dt()
+	pv = dtvoter(df,10)
+	pv.dt()
 	#pv = VarianceVoter(df,10)
 	#pv.variance()
 	#pv = CorelationVoter(df,10)
 	#pv.corelation()
 	#pv = WrapperVoter(df,10)
-	#print pv.rfe()
+	#pv.rfe()
 	#pv = RndLassovoter(df,10)
 	#pv.l1()
 	#pv = GBDTVoter(df,10)
 	#pv.gbdt()
-	pv = rfvoter(df,10)
-	pv.rf()
+	#pv = rfvoter(df,10)
+	#pv.rf()
 	print pv.getTopic()
 
