@@ -21,11 +21,16 @@ def simrank_from_file(filename):
 
 
 def simrank(ndarray):
-	edges = array2edge(ndarray)
+	print "matrix shape",ndarray.shape
+	row,col,edges = array2edge(ndarray)
 	G = nx.DiGraph()
-	print edges
+	G.add_nodes_from(range(row), bipartite=0)
+	G.add_nodes_from(range(col), bipartite=1)
 	G.add_edges_from(edges)
-	print gs.simrank_bipartite(G)
+	m = gs.simrank_bipartite(G)
+	print "similiarty",m.shape
+	return m
+	
 
 
 def array2edge(nd):
@@ -35,7 +40,8 @@ def array2edge(nd):
 		for j in range(col):
 			if not util.isMissing(nd[i][j],np.nan):
 				edges.append((i,j))
-	return edges
+	return row,col,edges
 
 if __name__ == '__main__':
-	simrank_from_file('../../mq_data/topic_matric_twoparty_balan.csv')
+	m = simrank_from_file('../../mq_data/topic_matric_twoparty_balan.csv')
+	print m.shape
