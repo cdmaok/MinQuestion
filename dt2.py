@@ -17,7 +17,7 @@ class DecisionTree(threading.Thread):
         self.labelsT=[]
         self.Test=np.array([])
         self.usedThresholds={}
-        for i in range(0,67777):
+        for i in range(0,6777):
             self.usedThresholds[i]=set()
         self.Tree=np.ones((10000,1))
         self.Thresholds=np.ones((10000,1))
@@ -90,10 +90,14 @@ class DecisionTree(threading.Thread):
                 thresholds.append(thresh)
             #mutex.release()                
             #print IGA
+            #print thresholds
+						
             t = sorted(range(len(IGA)),key=lambda k:IGA[k],reverse=True)
             #print '---feature-',t[:10]
             test = [IGA[i] for i in t[:10]]
-            #print test
+            #print '----entropy---',test[:10]
+            th = [thresholds[i] for i in t[:10]]
+            #print '----threshold---',th[:10]
             return t[:10]
 			
     def findThresholdAndIG(self,data1,Attr,labels1):
@@ -190,6 +194,7 @@ class DecisionTree(threading.Thread):
 			HY_X_R=HY_X_R*float(rowsRight.shape[0])/data.shape[0]
         
 		IG=HX-HY_X_L-HY_X_R
+		#print HX
 		return IG 
     
     def getTopic(self):
@@ -198,8 +203,12 @@ class DecisionTree(threading.Thread):
                              
        
     #def checkValues(self):
-        
-#ob1=DecisionTree()
-#ob1.loadTrain()
-#ob1.loadTest()
+
+if __name__ == '__main__':       
+	
+	csvname = './white_entropy_en_pos.csv'
+	df = pd.read_csv(csvname)
+	ob1=DecisionTree(df,10)
+	ob1.loadTrain(df)
+	#ob1.loadTest()
 

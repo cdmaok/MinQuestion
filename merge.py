@@ -90,8 +90,8 @@ def goal_all(_list):
 	
 	
 def MergeTopic(probs,filename,multi = True):
-	#sampled_names = accept_sampling(probs)
-	sampled_names = pos_sampling(probs)
+	sampled_names = accept_sampling(probs)
+	#sampled_names = pos_sampling(probs)
 	df = pd.read_csv(filename)
 	labels = list(df.drop_duplicates(subset='Class').Class)
 	condict = {'user_topic':sampled_names}

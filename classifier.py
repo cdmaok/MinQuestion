@@ -102,7 +102,7 @@ def getXY(df):
 def main(feature,csvname,num=10):
 	
 	feature = [i + 1 for i in feature]
-	#feature = [4496, 2468, 1056, 5149, 1442, 4144, 2870, 2929, 2162, 4746]
+	#feature = [4346, 4496, 4184, 1189, 2247, 5721, 6284, 1421, 6418, 6043]
 	print feature
 	#csvname = './white_old_goalfile.csv'
 	goal_df = pd.read_csv(csvname,dtype={"user_topic":str,"Class":str})	
@@ -113,7 +113,8 @@ def main(feature,csvname,num=10):
 	feature = [0] + feature + [-1]
 
 	#print feature 
-	df = goal_df.ix[:,feature]	
+	df = goal_df.ix[:,feature]
+	
 	df.to_csv('./test.csv',index=False)
 	
 	SvmClassifier(df)

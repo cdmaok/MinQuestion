@@ -12,18 +12,19 @@ import pandas as pd
 
 def simrank_from_file(filename):
 	df = pd.read_csv(filename)
-        cols = df.columns.values.tolist()
-        cols.remove('user_topic')
-        cols.remove('Class')
-        df = df.replace('yes','1').replace('no','0').replace('?',np.nan)
-        m = df[cols].as_matrix().astype(np.float64)
+	cols = df.columns.values.tolist()
+	cols.remove('user_topic')
+	cols.remove('Class')
+	df = df.replace('yes','1').replace('no','0').replace('?',np.nan)
+	m = df[cols].as_matrix().astype(np.float64)
 	return simrank(m)
+	
 
 
 def simrank(ndarray):
 	edges = array2edge(ndarray)
 	G = nx.DiGraph()
-	print edges
+	#print edges
 	G.add_edges_from(edges)
 	print gs.simrank_bipartite(G)
 

@@ -11,6 +11,8 @@ import numpy as np
 import math
 from itertools import combinations
 
+groundtruth = '../mq_data/white_old.gt'
+
 def rouge(candidate,reference,rouge_type,n=1,Dskip=4):#n专门给ROUGE-N,L使用，Dskip专门给ROUGE-S使用
     if(rouge_type=='n'):#ROUGE-N
         if(type(candidate)==list):
@@ -185,8 +187,7 @@ def get_fields(array):
 
 	
 def get_can(groundtruth):
-
-	groundtruth = '../mq_data/white_old.gt'
+	
 	f = open(groundtruth)
 	while True:
 		line = f.readline().strip()
@@ -203,7 +204,7 @@ if __name__ == "__main__":
 		print 'need a filename'
 		sys.exit()
 	filename = sys.argv[1]
-	read_file(filename)
+	get_ref(filename)
 	
 	
     reference=['police killed the gunman', 'the gunman was shot down by police']

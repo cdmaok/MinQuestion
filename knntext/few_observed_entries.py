@@ -74,6 +74,8 @@ def knn_impute_few_observed(X, missing_mask, k, verbose=False, print_interval=10
 
     dot = np.dot
     for i in range(n_rows):
+        if (sim[i][D_sorted[i][1]] < 0.6) or (sim[i][D_sorted[i][1]] == 1.0) :
+            continue
         missing_row = missing_mask[i, :]
         missing_indices = np.where(missing_row)[0]
         row_weights = inv_D[i, :]
