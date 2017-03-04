@@ -20,8 +20,10 @@ import sampling_method
 import math
 from fill import util
 import dt2
+<<<<<<< HEAD
 from skfeature.function.information_theoretical_based import MRMR
 from sklearn.ensemble import AdaBoostClassifier
+
 
 ## get the first n elements of array,but if array[n-1] == array[n],then the (n+1)th element will be return.
 def cut(score,index,size):
@@ -114,10 +116,11 @@ class MRMRvoter(threading.Thread):
 		#print self.topics
 
 
+
 	
 	def getTopic(self):
 		return self.topics
-	
+
 	
 class svmvoter(threading.Thread):
 	'''
@@ -208,9 +211,11 @@ class dtvoter(threading.Thread):
 	def dt(self):
 		#print 'dt'
 		x,y = getXY(self.sampled_df)
-		clf = tree.DecisionTreeClassifier(criterion='entropy',max_depth=self.num)
+		#clf = tree.DecisionTreeClassifier(criterion='gini',max_depth=self.num)
+		clf = tree.DecisionTreeClassifier(criterion='gini')
 		clf.fit(x,y)
 		score = clf.feature_importances_
+		#print list(score)
 		self.topics = getHighScoreIndex(score,self.num)
 
 
@@ -439,7 +444,6 @@ class rfvoter(threading.Thread):
 def get_method(type=0):
 
 	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter,dt2.DecisionTree,WrapperDTVoter,MRMRvoter,adaboostvoter]
-
 	return method_list[type]
 	
 def over_sampling(x,y):

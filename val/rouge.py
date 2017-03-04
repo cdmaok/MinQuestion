@@ -4,12 +4,17 @@ Created on Mon Feb 06 09:57:48 2017
 
 @author: nb
 """
+import sys
+sys.path.append("..")
 import config
 import sys
 import re
 import numpy as np
 import math
 from itertools import combinations
+
+#groundtruth = config.groundtruth
+groundtruth = '../../mq_data/groundtruth/white_old.gt'
 
 def rouge(candidate,reference,rouge_type,n=1,Dskip=4):#n专门给ROUGE-N,L使用，Dskip专门给ROUGE-S使用
     if(rouge_type=='n'):#ROUGE-N
@@ -152,15 +157,15 @@ def get_lcs_inner(direct, a, i, j, lcs):
     else:
         get_lcs_inner(direct, a, i, j - 1, lcs)
 
-def get_ref(filename):
+def get_ref(filename,candidate):
 	f = open(filename)
 	while True:
 		line = f.readline().strip()
 		if not line: break
 		if line.startswith('<class'):
 			tmp = line.split('.')
-			fs = fs[len(tmp)-1].replace('\'>','')
-			print fs
+			fs = tmp[len(tmp)-1].replace('\'>','')
+			#print fs
 		if line.startswith('-------print feature'):
 			line = f.readline().strip()
 			querys = []
@@ -168,7 +173,8 @@ def get_ref(filename):
 				querys.append(line)
 				line = f.readline().strip()
 			a,b,c = get_fields(querys)
-			print c
+			#print c
+			print fs,rouge(candidate,c,'n',1),rouge(candidate,c,'l',1),rouge(candidate,c,'w',1),rouge(candidate,c,'s',1)
 			#print '\n'.join(c)
 			#print 
 
@@ -185,28 +191,33 @@ def get_fields(array):
 
 	
 def get_can(groundtruth):
-
-	groundtruth = '../mq_data/white_old.gt'
+	
 	f = open(groundtruth)
+	candi_querys = []
 	while True:
 		line = f.readline().strip()
-		if not line: break
-		candi_querys = []
+		if not line: break		
 		candi_querys.append(line)
 		
 	return candi_querys
    
     
 if __name__ == "__main__":
-	
-	if len(sys.argv) < 2:
+	print 'rouge'
+	if len(sys.argv) < 3:
 		print 'need a filename'
+		print 'python rouge.py groundtruth result.log'
 		sys.exit()
-	filename = sys.argv[1]
-	read_file(filename)
 	
+	groundtruth = sys.argv[1]
+	filename = sys.argv[2]
+	print filename
+	candidate = get_can(groundtruth)
+	#print candidate
+	get_ref(filename,candidate)
 	
-    reference=['police killed the gunman', 'the gunman was shot down by police']
+	'''
+	reference=['police killed the gunman', 'the gunman was shot down by police']
     candidate1=['police ended the gunman']
     #candidate2='the gunman murdered police'
     #print rouge(candidate1,reference,'n',1)
@@ -228,6 +239,6 @@ if __name__ == "__main__":
     candidate2=['the gunman police killed']
     candidate3=['police kill the gunman']
     #print rouge(candidate3,reference,'s')
-    
+    '''
     
         

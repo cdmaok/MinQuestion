@@ -26,11 +26,14 @@ import config
 '''TODO: fill with matrix factorization change Vote Matrix'''
 
 Path = config.Path
-Cluster_Result = config.Cluster_Result
+#Cluster_Result = config.Cluster_Result
 Vote_Matrix = config.Vote_Matrix
 Comment_Dir = config.Comment_Dir
 Filemodel = config.Filemodel
 Stoplist = config.Stoplist
+
+two_party_flag = config.two_party_flag
+Cluster_Result = config.Cluster_Result_tp if two_party_flag == True else config.Cluster_Result
 
 def group(label):
 	username = []
@@ -171,7 +174,9 @@ def fill(rule,sdf,method = 'rake',threshold = 0.6):
 		print 'cluster:',cluster
 
 		#df = pd.read_csv(Vote_Matrix)
-		querylist = sdf.columns.values[1:-1]  #第一行
+		querylist = sdf.columns.values.tolist()  #第一行
+		querylist.remove('user_topic')  #第一行
+		querylist.remove('Class')
 		querylist = [q.strip().decode('utf-8','ignore')  for q in list(querylist)]
 		
 
@@ -283,6 +288,7 @@ def fill_with_col_ap(m,querylist,edge,data_1,sim,datatype='binary'):
 		random.shuffle(match)
 		changed = 0
 		for pair in match:
+			pair = [e + 1 for e in pair]
 			node = pair[0]
 			simnodes = pair[1:]
 			j = 0
@@ -333,6 +339,7 @@ def fill_with_ap(m,querylist,edge,data_1,sim):
 		while iter<100 and diff>0:
 			diff = 0
 			for node in xrange(len(querylist)):
+				node += 1
 				if (len(match[node]) > 0) and (util.isNone(tmp_copy[i][node+1])) : #tmp
 					simset = match[node]
 					# for node in simset:
@@ -341,18 +348,19 @@ def fill_with_ap(m,querylist,edge,data_1,sim):
 					max_value = 0
 					pos = -1
 					for sim_node in simset:
-						if sim[node][sim_node] > max_value and not util.isNone(tmp[i][sim_node+1]):
+						sim_node += 1
+						if sim[node][sim_node] > max_value and not util.isNone(tmp[node][sim_node]):
 							pos = sim_node
 							max_value = sim[node][sim_node]
 					if pos == -1: ## all the similarity set is nan
 							#print 'all the similar query is null'
 						continue
 					else:
-						if tmp[i][node+1] != tmp[i][pos+1]:  ##最优解变了
+						if tmp[i][node] != tmp[i][pos]:  ##最优解变了
 							diff += 1
-							if tmp[i][node+1]=='?':
+							if tmp[i][node]=='?':
 								count += 1
-							tmp[i][node+1] = tmp[i][pos+1]
+							tmp[i][node] = tmp[i][pos]
 							
 				else: 	# no need to fill,already have value
 					#print 'no need to fill'
@@ -368,7 +376,8 @@ def fill_with_ap(m,querylist,edge,data_1,sim):
 if __name__ == '__main__':
 	rule = {'Gender':['Male'],'Age':20,'Party':['Democratic Party'],'Occupation':['Student']}
 	#rule = {'Ethnicity':['White']}
-	df = pd.read_csv(Vote_Matrix)
+	test_df = '../../mq_data/test.csv'
+	df = pd.read_csv(test_df)
 	method = 'rake'
 	#method = 'doc2vec'
 	new_df = fill(rule,df,method)

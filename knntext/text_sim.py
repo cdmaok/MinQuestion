@@ -9,8 +9,12 @@ import json
 import knntext
 import config
 Comment_path = config.Comment_Dir
-Text_path = config.Text_path
-Matric_path = config.Vote_Matrix
+#Text_path = config.Text_path
+#Matric_path = config.Vote_Matrix
+two_party_flag = config.two_party_flag
+Text_path = config.Text_path_tp if two_party_flag == True else config.Text_path
+#Text_path = config.Text_path_tp
+
 def fill_whole(f,df):
 	'''
 	fill the matrix with fancyimpute
