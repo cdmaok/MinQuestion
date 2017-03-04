@@ -16,6 +16,7 @@ import fs
 
 
 def accept_sampling(_list,_size = 0):
+	print 'accept_sampling'
 	def decide_size(_list):
 		size = 0
 		count = 0
@@ -42,6 +43,8 @@ def accept_sampling(_list,_size = 0):
 	return _indexes
 
 def pos_sampling(_list,_size = 0):
+
+	print 'pos_sampling 0.8'
 	def decide_size(_list):
 		size = 0
 		count = 0
@@ -49,10 +52,11 @@ def pos_sampling(_list,_size = 0):
 			if e[1] <= 1 and e[1] > 0.5:
 				size += 1
 		return size * 0.8
-		
+	
 	if _size == 0:
 		# generate size automatically
 		_size = decide_size(_list)
+	#print _size	
 	_indexes = []
 	length = len(_list)
 	i = 0
@@ -63,7 +67,44 @@ def pos_sampling(_list,_size = 0):
 		if acc < pro:
 			i += 1
 			_indexes.append(_list[random_index][0])
+
 	return _indexes	
+
+def tpro_sampling(_list,_size = 0):
+	probs_file2 = '../mq_result/two_party.pro'
+	probs2 = read_probs(probs_file2)	
+	
+	_indexes = []
+	tmp = []
+	def decide_size(_list):
+		size = 0
+		count = 0
+		for j in range(len(_list)):
+			e = _list[j]
+			#if e[1] <= 1 and e[1] > 0.5 :
+			if e[1] <= 1 and e[1] >= 0.5 and probs2[j][1] == 1:
+				tmp.append(j)
+				size += 1
+		return size *0.8
+	#print tmp	
+	if _size == 0:
+		# generate size automatically
+		_size = decide_size(_list)
+	#print _size
+	length = len(_list)
+	i = 0
+
+	while i < _size:
+		random_index = random.sample(tmp,1)
+		random_index = random_index[0]
+		pro = _list[random_index][1]
+		acc = random.uniform(0.5,1)
+		if acc < pro and probs2[random_index][1] == 1:
+			i += 1
+			tmp.remove(random_index)
+			_indexes.append(_list[random_index][0])
+	#print _indexes
+	return _indexes
 	
 def goal_file(_list):	
 	#print len(_list)
@@ -91,7 +132,8 @@ def goal_all(_list):
 	
 def MergeTopic(probs,filename,multi = True):
 	#sampled_names = accept_sampling(probs)
-	sampled_names = pos_sampling(probs)
+	#sampled_names = pos_sampling(probs)
+	sampled_names = tpro_sampling(probs)
 	df = pd.read_csv(filename)
 	labels = list(df.drop_duplicates(subset='Class').Class)
 	condict = {'user_topic':sampled_names}
@@ -163,7 +205,7 @@ def get_file(probs_file,origin_file):
     probs = read_probs(probs_file)	
     df,labels = MergeTopic(probs,origin_file)
     sampled_df = processdf(df,labels)
-    #print(sampled_df['Class'].value_counts())
+    print(sampled_df['Class'].value_counts())
     return sampled_df	
 	
 def get_goal_file(probs_file,goal_file,origin_file):	
