@@ -20,7 +20,7 @@ import sampling_method
 import math
 from fill import util
 import dt2
-
+#from scikit-feature.skfeature.function.information_theoretical_based import MRMR
 ## get the first n elements of array,but if array[n-1] == array[n],then the (n+1)th element will be return.
 def cut(score,index,size):
 	src = score[index[size - 1]]
@@ -45,7 +45,37 @@ def getHighScoreIndex(score,size):
 	expand = cut(score,index,size)
 	return index[0:expand]
 	
+class MRMRvoter(threading.Thread):
+	'''
+	https://github.com/jundongl/scikit-feature/blob/master/skfeature/example/test_MRMR.py
+		
+	'''
+	def __init__(self,sampled_df,f_num):
+		threading.Thread.__init__(self)
+		self.sampled_df = sampled_df
+		self.topics = []
+		self.num = f_num
 
+
+
+	def run(self):
+		self.svm()
+
+
+
+	def svm(self):
+		#print 'svm'
+		x,y = getXY(self.sampled_df)
+		idx = MRMR.mrmr(x,y, n_selected_features=num_fea)
+		self.topics = idx[0:num_fea]
+		print self.topics
+
+
+	
+	def getTopic(self):
+		return self.topics
+
+	
 class svmvoter(threading.Thread):
 	'''
 	http://scikit-learn.org/stable/modules/feature_selection.html
@@ -135,9 +165,11 @@ class dtvoter(threading.Thread):
 	def dt(self):
 		#print 'dt'
 		x,y = getXY(self.sampled_df)
-		clf = tree.DecisionTreeClassifier(criterion='entropy',max_depth=self.num)
+		#clf = tree.DecisionTreeClassifier(criterion='gini',max_depth=self.num)
+		clf = tree.DecisionTreeClassifier(criterion='gini')
 		clf.fit(x,y)
 		score = clf.feature_importances_
+		#print list(score)
 		self.topics = getHighScoreIndex(score,self.num)
 
 
@@ -366,7 +398,6 @@ class rfvoter(threading.Thread):
 def get_method(type=0):
 
 	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter,dt2.DecisionTree,WrapperDTVoter]
-
 	return method_list[type]
 	
 def over_sampling(x,y):

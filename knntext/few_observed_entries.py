@@ -18,8 +18,14 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from .doc2vec import getvector
 import config
+from fill import simrank
 Filemodel = config.Filemodel
-Text_path = config.Text_path
+#Text_path = config.Text_path
+origin_file = config.origin_file
+simrank_flag = config.simrank_flag
+two_party_flag = config.two_party_flag
+Text_path = config.Text_path_tp if two_party_flag == True else config.Text_path
+
 def doc2vec_method(df):
     df = df.replace(np.nan,'')
     text = df.iloc[:,1]
@@ -37,9 +43,13 @@ def doc2vec_method(df):
 def knn_impute_few_observed(X, missing_mask, k, verbose=False, print_interval=100):
 
     start_t = time.time()
-    df = pd.read_csv(Text_path)
-    # df = pd.read_csv('./text_twoparty.csv')
-    sim = doc2vec_method(df)
+    if(simrank_flag):
+        sim = simrank.simrank_from_file(origin_file)
+    else:
+        df = pd.read_csv(Text_path)
+        # df = pd.read_csv('./text_twoparty.csv')
+        sim = doc2vec_method(df)
+	
 
     n_rows, n_cols = X.shape
     # put the missing mask in column major order since it's accessed
@@ -67,15 +77,16 @@ def knn_impute_few_observed(X, missing_mask, k, verbose=False, print_interval=10
     # print(D_sorted)
 
     D_sorted = np.argsort(-sim, axis=1)
-    # print(D_sorted)
+    # print(D_sorted)   
     inv_D = sim
+    
     # print(inv_D)
 
 
     dot = np.dot
     for i in range(n_rows):
-        if (sim[i][D_sorted[i][1]] < 0.6) or (sim[i][D_sorted[i][1]] == 1.0) :
-            continue
+        #if (sim[i][D_sorted[i][1]] < 0.6) or (sim[i][D_sorted[i][1]] == 1.0) :
+        #    continue
         missing_row = missing_mask[i, :]
         missing_indices = np.where(missing_row)[0]
         row_weights = inv_D[i, :]
