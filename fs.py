@@ -20,7 +20,7 @@ import sampling_method
 import math
 from fill import util
 import dt2
-<<<<<<< HEAD
+
 from skfeature.function.information_theoretical_based import MRMR
 from sklearn.ensemble import AdaBoostClassifier
 
