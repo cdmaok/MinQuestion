@@ -4,7 +4,7 @@
 #test.py
 Home = '/home/yangying'
 data_path = Home+'/mq_data/'
-result_path = Home+'/mq_result/'
+result_path = Home+'/mq_result/other_rules/Labor/'
 two_party_flag = False
 #vote_matrix = 'topic_matric_twoparty_balan.csv'
 vote_matrix = 'topic_matric_origin.csv'
@@ -39,7 +39,6 @@ Stoplist = Path + 'SmartStoplist.txt'
 Text_path = data_path + 'text.csv'
 Text_path_tp = data_path + 'text_twoparty.csv'
 
-simrank_flag = False
 #origin_file = data_path+'topic_matric_twoparty_balan.csv'
 #origin_file = data_path+'topic_matric_origin.csv'
 

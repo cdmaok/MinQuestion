@@ -28,6 +28,7 @@ class KNN(Solver):
     def __init__(
             self,
             k=5,
+            simf = 'text',
             orientation="rows",
             use_argpartition=False,
             print_interval=100,
@@ -40,6 +41,9 @@ class KNN(Solver):
         ----------
         k : int
             Number of neighboring rows to use for imputation.
+	
+	sim : 'text' or 'simrank'
+	    similarity function
 
         orientation : str
             Which axis of the input matrix should be treated as a sample
@@ -73,6 +77,7 @@ class KNN(Solver):
         self.orientation = orientation
         self.print_interval = print_interval
         self._impute_fn = knn_impute_few_observed
+	self.simf = simf
 
     def solve(self, X, missing_mask):
         if self.orientation == "columns":
@@ -86,6 +91,7 @@ class KNN(Solver):
 
         X_imputed = self._impute_fn(
             X=X,
+	    simf = self.simf,
             missing_mask=missing_mask,
             k=self.k,
             verbose=self.verbose,

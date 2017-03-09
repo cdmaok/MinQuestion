@@ -4,8 +4,60 @@
 import config
 import sys
 import pandas as pd 
-
+import numpy as np
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import export_graphviz
+import pydotplus
 ## demo -->4 repub --> 1
+
+def get_missing(filename):
+	df = pd.read_csv(filename)
+        query = df.columns.values[:]
+        origin_matrix = df.as_matrix()
+	positions = []
+	print origin_matrix.shape
+        for iter_i,i in enumerate(origin_matrix):
+                for iter_j,j in enumerate(i):
+                        if j=='yes' or j=='no':
+                                positions.append((iter_i,iter_j))
+	print positions
+	return positions
+
+
+
+def box_plot_matrix():
+	fs = ['../mq_result/white_old_biscaler0.6twoparty_balan_reduce.csv','../mq_result/white_old_knn0.6twoparty_balan_reduce.csv','../mq_result/white_old_knn_doc0.6twoparty_balan_reduce.csv','../mq_result/white_old_knn_rake0.6twoparty_balan_reduce.csv','../mq_result/white_old_itersvd0.6twoparty_balan_reduce.csv','../mq_result/white_old_mf0.6twoparty_balan_reduce.csv','../mq_result/white_old_knn_simrank0.6twoparty_balan_reduce.csv','../mq_result/white_old_soft_impute0.6twoparty_balan_reduce.csv']
+	pos = get_missing('../mq_data/topic_matric_twoparty_balan.csv')
+	ms = [get_matrix(f,pos) for f in fs[:]]
+	fig = plt.figure()
+	plt.boxplot(ms,sym='')
+	old = range(1,9)
+	print old
+	new = ['bs','knn_text','knn_doc','knn_rake','iter-svd','mf','knn_sim','Impute']
+	plt.xticks(old[:],new[:])
+	fig.savefig('test.png')
+
+
+
+
+def get_matrix(filename,pos):
+	df = pd.read_csv(filename)
+	#columns = df.columns.values.tolist()
+	#columns.remove('user_topic')
+	#columns.remove('Class')
+	#df = df[columns]
+	m = df.as_matrix()
+	res = []
+	for p in pos:
+		res.append(m[p[0]][p[1]])
+	print res
+	return res
+
+
+
 
 def get_fields(array):
 	indexs = []
@@ -50,7 +102,7 @@ def get_stat(filename):
 				if not line: break
 			querys = [ t.split() for i,t in enumerate(querys) if i not in [1,3,5,7]]
 			whole.append(querys)
-	row = 0
+	row = 2
 	col = 0
 	stats = [size[row][col] for size in whole]
 	return stats
@@ -70,26 +122,62 @@ def best(filename):
 	print 'max precision is ', s[g[0]]
 	return q[g[0]]
 
+def newdf(datafile):
+	df = pd.read_csv(datafile)
+	columns = df.columns.values.tolist()
+	columns = [col.strip() for col in columns]
+	ndf = pd.DataFrame(data=df.as_matrix(),columns=columns)
+	return ndf
+
 def extract_data(logfile,datafile=None):
+	datafile = sys.argv[2]
 	if datafile == None:
 		print 'need datafile name'
 		sys.exit()
 	querys = best(logfile).split('\n')
-	df = pd.read_csv(datafile)
 	### Class
+	df = newdf(datafile)
 	namelist = df['user_topic'].tolist()
-	columns = df.columns.values.tolist()
-	columns = [col.strip() for col in columns]
-	ndf = pd.DataFrame(data=df.as_matrix(),columns=columns)
-	#print namelist
-	#mfile = '/home/yangying/mq_data/topic_matric_origin.csv'
-	#df = pd.read_csv(mfile)
-	#df = df.ix[df['user_topic'].isin(namelist)]
+	print df['Class']
 	for q in querys[:]:
-		for party in ['Republican Party','Democratic Party']:
-		#for party in [1,4]:
-			sdf = ndf.ix[ndf['Class'] == party]
-			print sdf[[q,'Class']]
+		#for party in ['Republican Party','Democratic Party']:
+		print q
+		for party in [1,4]:
+			if party == 1:
+				print 'repub'
+			else:
+				print 'de'
+			print len(namelist)
+			getVector(df,party,q)
+
+def extract_qn(logfile,datafile=None):
+	datafile = sys.argv[2]
+	if datafile == None:
+		print 'need datafile name'
+		sys.exit()
+	querys = best(logfile).split('\n')
+	df = newdf(datafile)
+	x = df[querys].as_matrix()
+	y = list(df['Class'].as_matrix())
+	dt = DecisionTreeClassifier(criterion='entropy')
+	x[x>0] = 1
+	x[x<0] = -1
+	dt.fit(x,y)
+	classlist = ['Republican Party','Democratic Party']
+        dot = export_graphviz(dt,filled=True,label='all',feature_names=querys,leaves_parallel=False,class_names=classlist,out_file=None)
+        graph = pydotplus.graph_from_dot_data(dot)
+        graph.write_pdf('./tt.pdf')
+
+
+def getVector(df,party,q):
+	sdf = df.ix[df['Class'] == party]
+	vs = sdf[q].as_matrix()
+	total = vs.shape[0]
+	neg = (vs > 0).sum()
+	print total,neg,total - neg
+	return (neg,total - neg)
+	
+
 
 
 if __name__ == '__main__':
@@ -97,8 +185,9 @@ if __name__ == '__main__':
 		print 'need a filename'
 		sys.exit()
 	filename = sys.argv[1]
-	datafile = sys.argv[2]
 	#get_querys(filename)
 	#get_stat(filename)
-	#best(filename)
-	extract_data(filename,datafile)
+	#print best(filename)
+	#extract_data(filename)
+	extract_qn(filename)
+	#box_plot_matrix()
