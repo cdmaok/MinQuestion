@@ -125,7 +125,7 @@ def accuracy(Mat_Label_0,Mat_Label_1,num_0,num_1,method):
 	recall_2 = []
 	f1_1 = []
 	f1_2 = []
-	# cv = KFold(Mat_Label.shape[0], n_folds=10,shuffle=True)
+
 	cv = KFold(n_splits=10,shuffle=True).split(Mat_Label)
 
 	for train_index, test_index in cv:
@@ -194,10 +194,10 @@ if __name__=="__main__":
 		for i in method:
 			p1,p2,r1,r2,f1,f2 = accuracy(Mat_Label_0,Mat_Label_1,num_0,num_1,i)
 			tmp.extend([p1,p2,r1,r2,f1,f2])
-
+			print tmp
 		tmp.extend([num_1,num_0])
 		data.append(tmp)
-		print data
+		print tmp
 	print data
 	title = ['precision：  train ; test =  9:1','precision：  train ; test =  1:9','recall：  train ; test =  9:1','recall：  train ; test =  1:9','f1：  train ; test =  9:1','f1：  train ; test =  9:1']
 	for i in xrange(len(title)):
