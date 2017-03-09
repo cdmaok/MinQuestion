@@ -47,6 +47,10 @@ def isEqual(a1,a2):
 def getHighScoreIndex(score,size):
 	index  = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
 	expand = cut(score,index,size)
+	#feature rank 
+	output = open('../mq_result/other_rules/age/old_feature_rank', 'a')
+	output.write(str(index[0:expand])+'\n')
+	output.close( )
 	return index[0:expand]
 
 class adaboostvoter(threading.Thread):

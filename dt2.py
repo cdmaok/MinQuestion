@@ -94,11 +94,11 @@ class DecisionTree(threading.Thread):
 						
             t = sorted(range(len(IGA)),key=lambda k:IGA[k],reverse=True)
             #print '---feature-',t[:10]
-            test = [IGA[i] for i in t[:10]]
+            test = [IGA[i] for i in t[:self.num]]
             #print '----entropy---',test[:10]
-            th = [thresholds[i] for i in t[:10]]
+            th = [thresholds[i] for i in t[:self.num]]
             #print '----threshold---',th[:10]
-            return t[:10]
+            return t[:self.num]
 			
     def findThresholdAndIG(self,data1,Attr,labels1):
         #print 'trying attribute ',Attr

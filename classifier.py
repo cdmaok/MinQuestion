@@ -22,6 +22,19 @@ def SvmClassifier(sampled_df):
 	
 	print np.mean(accuracy),np.mean(precision),np.mean(recall),np.mean(f1),np.mean(roc_auc)
 
+def SvmrbfClassifier(sampled_df):
+	print 'SVMrbf'
+	x,y = getXY(sampled_df)
+	#print collections.Counter(list(y))	
+	clf = svm.SVC(kernel='rbf')
+	accuracy = cross_val_score(clf, x,y, cv=5)
+	precision = cross_val_score(clf, x,y, cv=5, scoring='precision')
+	f1 = cross_val_score(clf, x,y, cv=5, scoring='f1')
+	recall = cross_val_score(clf, x,y, cv=5, scoring='recall')
+	roc_auc = cross_val_score(clf, x,y, cv=5, scoring='roc_auc')
+	
+	print np.mean(accuracy),np.mean(precision),np.mean(recall),np.mean(f1),np.mean(roc_auc)	
+	
 
 def lassoClassifier(sampled_df):
 	print 'lasso'
@@ -101,9 +114,9 @@ def getXY(df):
 				
 def main(feature,csvname,num=10):
 
-	feature = [i + 1 for i in feature]
+	#feature = [i + 1 for i in feature]
 	#feature = [2074, 4673, 344, 467, 1458, 1926, 2526, 2570, 3085, 3975]
-	print feature
+	#print feature
 	#csvname = './white_old_goalfile.csv'
 	goal_df = pd.read_csv(csvname,dtype={"user_topic":str,"Class":str})	
 	headers = list(goal_df.columns)
@@ -117,7 +130,8 @@ def main(feature,csvname,num=10):
 	
 	#df.to_csv('./dt_result.csv',index=False)
 	#df = pd.read_csv(csvname,dtype={"user_topic":str,"Class":str})	
-		
+	
+	SvmrbfClassifier(df)	
 	SvmClassifier(df)
 	lassoClassifier(df)
 	DTClassifier(df,num)

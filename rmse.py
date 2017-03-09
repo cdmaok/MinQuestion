@@ -50,7 +50,10 @@ def fill_matrix(origin_file,origin_fill,fill_method_name,threshold=0.6):
 	elif fill_method_name == 'knn_simrank' :
 		#change config.py simrank_flag = True before use this method
 		fill_method = text_sim.fill_knn_whole
-		df = text_sim.fill_whole(fill_method,df)
+		df = text_sim.fill_whole(fill_method,df,simf='simrank')
+	elif fill_method_name == 'knn_text':
+		fill_method = text_sim.fill_knn_whole
+		df = text_sim.fill_whole(fill_method,df,simf='text')
 	elif fill_method_name == 'itersvd' :
 		fill_method = mc.fill_svd_whole
 		df = mc.fill_whole(fill_method,df)
@@ -72,25 +75,26 @@ def fill_matrix(origin_file,origin_fill,fill_method_name,threshold=0.6):
 
 if __name__ == '__main__':
 
-	sum = [0 for i in xrange(7)]
 	rule = {'Ethnicity':'White','Age':[40,50,60,70,80,90,100,110]}
 	threshold = 0.6
 	filename = result_path + 'white_old'
 	vote_matrix = 'twoparty_balan_reduce.csv'
-	fill_method = ['knn_rake','knn_doc','knn_simrank','itersvd','soft_impute','mf','biscaler']
+	fill_method = ['knn_text','knn_rake','knn_doc','knn_simrank','itersvd','soft_impute','mf','biscaler']
+	total = [0 for i in xrange(len(fill_method))]
+	#fill_method = ['knn']
 	result = []
-	for i in xrange(10):
+	for i in xrange(1):
 		origin_file = data_path + 'topic_matric_twoparty_balan.csv'
 		df = pd.read_csv(origin_file)
-		reduce_matrix,slice = reduce_mat(df)
+		reduce_matrix,slices = reduce_mat(df)
 		value = []
-		for j in slice:
+		for j in slices:
 			if j[2] == 'yes':
 				value.append(1.)
 			else:
-				value.append(0.)
+				value.append(-1.)
 		tmp = []
-		for iter,method in enumerate(fill_method):
+		for index,method in enumerate(fill_method):
 			fill_method_name = method
 			origin_fill = filename + '_'+ fill_method_name + str(threshold) + vote_matrix
 			origin_file = data_path + 'topic_matric_twoparty_balan_reduce.csv'
@@ -101,16 +105,18 @@ if __name__ == '__main__':
 
 			fill_value = []
 			for k in xrange(len(value)):
-				fill_value.append(mat[slice[k][0],slice[k][1]])
-			tmp.append(sqrt(mean_squared_error(value,fill_value)))
-			sum[iter] += sqrt(mean_squared_error(value,fill_value))
+				fill_value.append(mat[slices[k][0],slices[k][1]])
+			rmse = sqrt(mean_squared_error(value,fill_value))
+			tmp.append(rmse)
+			total[index] += rmse
+		#print tmp
 		result.append(tmp)
-		print result
+	print result
 
-	for i in xrange(7):
+	for i in xrange(len(fill_method)):
 		print fill_method[i]
 		print 'RMSE:'
-		print sum[i]/10.
+		print total[i]/10.
 
 
 

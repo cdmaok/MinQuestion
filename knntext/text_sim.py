@@ -15,20 +15,21 @@ two_party_flag = config.two_party_flag
 Text_path = config.Text_path_tp if two_party_flag == True else config.Text_path
 #Text_path = config.Text_path_tp
 
-def fill_whole(f,df):
+def fill_whole(f,df,simf='text'):
 	'''
 	fill the matrix with fancyimpute
 	parameters notation:
 	df : dataframe
+	simf : 'text' or 'simrank'
 	f: matrix completion function
 	including fill_knn_whole, fill_nnm_whole,fill_sim_whole,fill_svd_whole,fill_svd_whole,fill_mice_whole,fill_mf_whole,fill_biscaler_whole
 	'''
 	cols = df.columns.values.tolist()
 	cols.remove('user_topic')
 	cols.remove('Class')
-	df = df.replace('yes','1').replace('no','0').replace('?',np.nan)
+	df = df.replace('yes','1').replace('no','-1').replace('?',np.nan)
 	m = df[cols].as_matrix().astype(np.float32)
-	m = f(m)
+	m = f(m,simf)
 	questions = df.columns.values.tolist()
 	a = df['user_topic'].as_matrix()[:,None]
 	b = df['Class'].as_matrix()[:,None]
@@ -36,12 +37,12 @@ def fill_whole(f,df):
 	newdf = pd.DataFrame(data=filled,columns=questions)
 	return newdf
 
-def fill_knn_whole(matrix):
+def fill_knn_whole(matrix,simf):
 	'''
 	fill the matrix with knn
 	'''
 	# matrix = KNN(k=3).completes(matrix)
-	matrix = knntext.KNN(k=3).complete(matrix)
+	matrix = knntext.KNN(k=3,simf=simf).complete(matrix)
 	return matrix
 
 
@@ -89,10 +90,10 @@ def text(df):
 if __name__ == '__main__':
 	# df = pd.read_csv(Matric_path)
 	# text(df)
-
+	Matric_path = '../../mq_data/topic_matric_twoparty_balan.csv'
 
 	df = pd.read_csv(Matric_path)
-	newdf = fill_whole(fill_knn_whole,df)
+	newdf = fill_whole(fill_knn_whole,df,simf='text')
 	# newdf.to_csv('./test_origin.csv',index=False)
 	print newdf.as_matrix().shape
 
