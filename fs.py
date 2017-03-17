@@ -20,10 +20,12 @@ import sampling_method
 import math
 from fill import util
 import dt2
-from skfeature.function.information_theoretical_based import MRMR,JMI
+
+
+from skfeature.function.information_theoretical_based import MRMR
 from sklearn.ensemble import AdaBoostClassifier
 
-#from scikit-feature.skfeature.function.information_theoretical_based import MRMR
+
 ## get the first n elements of array,but if array[n-1] == array[n],then the (n+1)th element will be return.
 def cut(score,index,size):
 	src = score[index[size - 1]]
@@ -111,9 +113,8 @@ class MRMRvoter(threading.Thread):
 		
 		x,y = getXY(self.sampled_df)
 		feat = []
-		#idx = MRMR.mrmr(x,y, n_selected_features=self.num)
-		idx = JMI.jmi(x,y, n_selected_features=self.num)
-		for i in range(self.num):
+		idx = MRMR.mrmr(x,y, n_selected_features=self.num)
+		for i in range(10):
 			feat.append(idx[i])
 		#print feat
 		self.topics = feat
@@ -245,10 +246,12 @@ class Kbesetvoter(threading.Thread):
 
 	def kbest(self):
 		x,y = getXY(self.sampled_df)
+		#print x,y
 		kb = SelectKBest(self.func, k=self.num)
 		kb.fit_transform(x, y)
-		score = kb.scores_ 
+		score = kb.scores_ 		
 		self.topics = getHighScoreIndex(score,self.num)
+		#print self.topics
 
 
 	
@@ -338,7 +341,7 @@ class WrapperDTVoter(threading.Thread):
 
 	def rfe(self):
 		x,y = getXY(self.sampled_df)
-		x,y = over_sampling(x,y)
+		#x,y = over_sampling(x,y)
 		rfe = RFE(estimator=self.base,n_features_to_select=self.num)
 		rfe.fit(x,y)
 		self.topics = list(rfe.get_support(indices=True))
@@ -374,11 +377,12 @@ class GBDTVoter(threading.Thread):
 def getXY(df):
 	def replaceLabel(x):
 		x = int(x)
-		tmp = 1 if x == 4 else -1
-		#tmp = 1 if x == 1 else -1
+		#tmp = 1 if x == 4 else -1
+		tmp = 1 if x == 1 else -1
 		return tmp		
 	headers = list(df.columns)
-	start = headers.index('user_topic')
+	#start = headers.index('user_topic')
+	start = -1
 	end = headers.index('Class')
 	x = df.ix[:,start + 1:end].as_matrix()
 	y = df.ix[:,end].apply(replaceLabel).as_matrix()
@@ -435,7 +439,7 @@ class rfvoter(threading.Thread):
 
 	def rf(self):
 		x,y = getXY(self.sampled_df)
-		#x,y = over_sampling(x,y)
+		x,y = over_sampling(x,y)
 		clf = RandomForestClassifier(criterion='entropy',max_depth=self.num)
 		clf.fit(x,y)
 		score = clf.feature_importances_
@@ -447,7 +451,9 @@ class rfvoter(threading.Thread):
 
 def get_method(type=0):
 
+
 	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter,dt2.DecisionTree,WrapperDTVoter,MRMRvoter,adaboostvoter,sampling_method.EntropyVoter]
+
 	return method_list[type]
 	
 def over_sampling(x,y):

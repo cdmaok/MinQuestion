@@ -116,11 +116,12 @@ def LRClassifier(sampled_df):
 def getXY(df):
 	def replaceLabel(x):
 		x = int(x)
-		tmp = 1 if x == 4 else -1
-		#tmp = 1 if x == 1 else -1
+		#tmp = 1 if x == 4 else -1
+		tmp = 1 if x == 1 else -1
 		return tmp
 	headers = list(df.columns)
-	start = headers.index('user_topic')
+	#start = headers.index('user_topic')
+	start = -1
 	end = headers.index('Class')
 	x = df.ix[:,start + 1:end].as_matrix()
 	y = df.ix[:,end].apply(replaceLabel).as_matrix()
@@ -135,10 +136,11 @@ def main(feature,csvname,num=10):
 	#csvname = './white_old_goalfile.csv'
 	goal_df = pd.read_csv(csvname,dtype={"user_topic":str,"Class":str})	
 	headers = list(goal_df.columns)
-	start = headers.index('user_topic')
+	#start = headers.index('user_topic')
+	start = -1
 	end = headers.index('Class')
-	goal_df = goal_df.ix[:,start:end+1]	
-	feature = [0] + feature + [-1]
+	goal_df = goal_df.ix[:,start+1:end+1]	
+	feature = feature + [-1]
 
 	#print feature 
 	df = goal_df.ix[:,feature]

@@ -72,7 +72,9 @@ def fill_mice_whole(matrix):
 	'''
 MICE: Reimplementation of Multiple Imputation by Chained Equations.
 	'''
+
 	matrix = MICE(n_imputations=5,impute_type='col',min_value=-1,max_value=1,verbose=False).complete(matrix)
+
 	return matrix
 
 def fill_mf_whole(matrix):

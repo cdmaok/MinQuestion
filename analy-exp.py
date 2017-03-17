@@ -103,6 +103,9 @@ def get_stat(filename,row=2,col=0):
 				if not line: break
 			querys = [ t.split() for i,t in enumerate(querys) if i not in [1,3,5,7]]
 			whole.append(querys)
+
+	row = 0
+	col = 0
 	stats = [size[row][col] for size in whole]
 	return stats
 	'''
@@ -161,10 +164,16 @@ def draw_graph(querys,datafile):
 	df = newdf(datafile)
 	x = df[querys].as_matrix()
 	y = list(df['Class'].as_matrix())
+<<<<<<< HEAD
 	dt = DecisionTreeClassifier(criterion='gini',min_samples_split=15)
 	x[x>0] = 1
 	x[x<0] = -1
 	print x.shape,len(y)
+=======
+	dt = DecisionTreeClassifier(criterion='entropy')
+	x[x>0.5] = 1
+	x[x<0.5] = -1
+>>>>>>> 25dd69c24806213d59911bc167230ee4af53b566
 	dt.fit(x,y)
 	classlist = ['Republican Party','Democratic Party']
         dot = export_graphviz(dt,filled=True,label='all',feature_names=querys,leaves_parallel=False,class_names=classlist,out_file=None)
