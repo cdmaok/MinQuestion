@@ -8,6 +8,21 @@ from sklearn import linear_model
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
+
+def NNClassifier(sampled_df):
+	print 'neural network'
+	x,y = getXY(sampled_df)
+	#print collections.Counter(list(y))	
+	clf = MLPClassifier(solver='lbfgs')
+	accuracy = cross_val_score(clf, x,y, cv=5)
+	precision = cross_val_score(clf, x,y, cv=5, scoring='precision')
+	f1 = cross_val_score(clf, x,y, cv=5, scoring='f1')
+	recall = cross_val_score(clf, x,y, cv=5, scoring='recall')
+	roc_auc = cross_val_score(clf, x,y, cv=5, scoring='roc_auc')
+	
+	print np.mean(accuracy),np.mean(precision),np.mean(recall),np.mean(f1),np.mean(roc_auc)
+
 
 def SvmClassifier(sampled_df):
 	print 'SVM'
@@ -130,19 +145,19 @@ def main(feature,csvname,num=10):
 	
 	#df.to_csv('./dt_result.csv',index=False)
 	#df = pd.read_csv(csvname,dtype={"user_topic":str,"Class":str})	
-	
+	NNClassifier(df)
 	SvmrbfClassifier(df)	
 	SvmClassifier(df)
 	lassoClassifier(df)
 	DTClassifier(df,num)
-	#GNBayesClassifier(df)
+	GNBayesClassifier(df)
 	KNNClassifier(df)
 	LRClassifier(df)
 		
 
 if __name__ == '__main__':
-	feature = [1, 2, 3, 4, 5, 6, 7, 8, 4537, 2883]
+	feature = [2722, 2883, 1189, 6284, 4496, 3121, 4952, 4346, 3550, 2426]
 	#csvname = './doc2vec/white_old_goal_fill.csv'
-	csvname = '../mq_result/white_old_biscaler0_goal_origin.csv'
+	csvname = '../mq_result/white_old_knn0_goal_origin.csv'
 	#csvname = './test/iris.csv'
 	main(feature,csvname)

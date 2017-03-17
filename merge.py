@@ -64,6 +64,37 @@ def pos_sampling(_list,_size = 0):
 			i += 1
 			_indexes.append(_list[random_index][0])
 	return _indexes	
+
+	
+	
+	
+def one_sampling(_list,_size = 0):
+	probs_file2 = '../mq_result/two_party.pro'
+	probs2 = read_probs(probs_file2)	
+	
+	_indexes = []
+	tmp = []
+	def decide_size(_list):
+		size = 0
+		count = 0
+		for j in range(len(_list)):
+			e = _list[j]
+			#print e[1],probs2[j][1]
+			if e[1] == 1  and probs2[j][1] == 1:
+				_indexes.append(e[0])
+				size += 1
+		return int(size *0.8)
+	#print tmp	
+	if _size == 0:
+		# generate size automatically
+		_size = decide_size(_list)
+	#print len(_list)
+	#print('the number of this group: ',_size)
+
+	sample = random.sample(_indexes,_size)
+	#print _indexes
+	#print sample	
+	return sample
 	
 def goal_file(_list):	
 	#print len(_list)
@@ -91,7 +122,8 @@ def goal_all(_list):
 	
 def MergeTopic(probs,filename,multi = True):
 	#sampled_names = accept_sampling(probs)
-	sampled_names = pos_sampling(probs)
+	#sampled_names = pos_sampling(probs)
+	sampled_names = one_sampling(probs)
 	df = pd.read_csv(filename)
 	labels = list(df.drop_duplicates(subset='Class').Class)
 	condict = {'user_topic':sampled_names}

@@ -26,10 +26,11 @@ def log_info(df):
 	
 class EntropyVoter(threading.Thread):
 	
-	def __init__(self,sampled_df):
+	def __init__(self,sampled_df,f_num):
 		threading.Thread.__init__(self)
 		self.sampled_df = sampled_df
-		self.topics = []	
+		self.topics = []
+		self.num = f_num		
 
 	def run(self):
 		self.entropy(self.sampled_df)
@@ -45,8 +46,8 @@ class EntropyVoter(threading.Thread):
 		choose_new = []
 		choose_old = []
 		samples = len(sampled_df)
-		k = range(10)
-		log_info(sampled_df)
+		k = range(self.num)
+		#log_info(sampled_df)
 		#每组根据信息增益IG(Y;Q)=H(Y)-H(Y|Q)贪心选出IG最大的10个query
 		#每次迭代选出一个query，我是直接计算H(Y|Q)，选最小的。有个问题是当信息增益可能一样时，默认index最小的query（待改进）
 		for iter in k:
@@ -178,9 +179,9 @@ def emsemble_sampling(ti,en,probs_file,origin_file,type=0,f_size=10):
     voters = []
     fs_method = fs.get_method(type)
     print str(fs_method)
-    output = open('../mq_result/other_rules/Labor/labor_feature_rank', 'a')
-    output.write(str(fs_method)+'\n')
-    output.close( )
+    #output = open('../mq_result/other_rules/fw/fw_feature_rank', 'a')
+    #output.write(str(fs_method)+'\n')
+    #output.close( )
     #do 10 times, according to the attribute probability prediction to sampling each time
     for t in time:
 		#print("----------------------iteration------------------- no.",t+1)
@@ -208,21 +209,16 @@ def emsemble_sampling(ti,en,probs_file,origin_file,type=0,f_size=10):
     for v in voters:
         all_topic += v.getTopic()
 		#feature rank 
-        output = open('../mq_result/other_rules/Labor/labor_feature_rank', 'a')
-        output.write(str(v.getTopic())+'\n')
-        output.close( )
+        #output = open('../mq_result/other_rules/fw/fw_feature_rank', 'a')
+        #output.write(str(v.getTopic())+'\n')
+        #output.close( )
     print("-------print feature------")
     feature = []
     for i in Counter(all_topic).most_common(f_size):
         a = str(i[0]+1)+"+"+str(i[1])+"+"+sampled_df.iloc[:,i[0]+1].name
-        #print(a)       
+        print(a)       
         feature.append(i[0]+1)   
-    #print(feature)
-    #feature rank 
-    #output = open('../mq_result/other_rules/age/old_feature_rank', 'a')
-    #output.write(str(fs_method)+'\n')
-    #output.write(str(feature)+'\n')
-    #output.close( )
+    print(feature)
     return feature
 
 

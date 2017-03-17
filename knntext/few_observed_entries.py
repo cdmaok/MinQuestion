@@ -38,6 +38,15 @@ def doc2vec_method(df):
     vectors = [list(getvector(q,Filemodel)) for q in text]
     m = np.asarray(vectors)
     sim = cosine_similarity(m,m)
+
+    # no_comment = []
+    # for i,q in enumerate(list(text)):
+    #     if q=='':
+    #         no_comment.append(i)
+    # for i in no_comment:
+    #     for j in no_comment:
+    #         sim[i][j] = 0
+
     return sim
 
 def knn_impute_few_observed(X, simf,missing_mask, k, verbose=False, print_interval=100):
@@ -50,7 +59,7 @@ def knn_impute_few_observed(X, simf,missing_mask, k, verbose=False, print_interv
         df = pd.read_csv(Text_path)
         # df = pd.read_csv('./text_twoparty.csv')
         sim = doc2vec_method(df)
-	
+
 
     n_rows, n_cols = X.shape
     print ("matrix size %d / %d, similarity size %d / %d"%(n_rows,n_cols,sim.shape[0],sim.shape[1]))
@@ -59,26 +68,21 @@ def knn_impute_few_observed(X, simf,missing_mask, k, verbose=False, print_interv
     missing_mask_column_major = np.asarray(missing_mask, order="F")
     observed_mask_column_major = ~missing_mask_column_major
     X_column_major = X.copy(order="F")
-    X_row_major, D = knn_initialize(X, missing_mask, verbose=verbose)
+    X_row_major,D = knn_initialize(X, missing_mask, verbose=verbose)
 
-    # get rid of infinities, replace them with a very large number
-    # finite_distance_distance_mask = np.isfinite(D)
-    # effective_infinity = 10 ** 6 * D[finite_distance_distance_mask].max()
-    # D[~finite_distance_distance_mask] = effective_infinity
-    #
-    # D_sorted = np.argsort(D, axis=1)
-    # inv_D = 1.0 / D
-    # D_valid_mask = D < effective_infinity
-    # valid_distances_per_row = D_valid_mask.sum(axis=1)
-    # # trim the number of other rows we consider to exclude those
-    # # with infinite distances
-    # D_sorted = [
-    #     D_sorted[i, :count]
-    #     for i, count in enumerate(valid_distances_per_row)
-    # ]
-    # print(D_sorted)
+     # we can cheaply determine the number of columns that two rows share
+    # by taking the dot product between their finite masks
+    # observed_elements = np.isfinite(X).astype(int)
+    # n_shared_features_for_pairs_of_rows = np.dot(observed_elements,observed_elements.T)
+    # for i in xrange(n_rows):
+    #     for j in xrange(n_rows):
+    #         if n_shared_features_for_pairs_of_rows[i,j]==0:
+    #             sim[i][j] = 0
 
-    D_sorted = np.argsort(sim, axis=1)
+
+
+
+    D_sorted = np.argsort(-sim, axis=1)
     # print(D_sorted)   
     inv_D = sim
     

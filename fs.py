@@ -20,6 +20,9 @@ import sampling_method
 import math
 from fill import util
 import dt2
+from skfeature.function.information_theoretical_based import MRMR,JMI
+from sklearn.ensemble import AdaBoostClassifier
+
 #from scikit-feature.skfeature.function.information_theoretical_based import MRMR
 ## get the first n elements of array,but if array[n-1] == array[n],then the (n+1)th element will be return.
 def cut(score,index,size):
@@ -44,14 +47,14 @@ def getHighScoreIndex(score,size):
 	index  = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
 	expand = cut(score,index,size)
 	#feature rank 
-	output = open('../mq_result/other_rules/age/old_feature_rank', 'a')
-	output.write(str(index[0:expand])+'\n')
-	output.close( )
+	#output = open('../mq_result/other_rules/age/old_feature_rank', 'a')
+	#output.write(str(index[0:expand])+'\n')
+	#output.close( )
 	return index[0:expand]
-	
-class MRMRvoter(threading.Thread):
+
+class adaboostvoter(threading.Thread):
 	'''
-	https://github.com/jundongl/scikit-feature/blob/master/skfeature/example/test_MRMR.py
+	http://scikit-learn.org/stable/modules/feature_selection.html
 		
 	'''
 	def __init__(self,sampled_df,f_num):
@@ -63,16 +66,59 @@ class MRMRvoter(threading.Thread):
 
 
 	def run(self):
-		self.svm()
+		self.boost()
 
 
 
-	def svm(self):
-		#print 'svm'
+	def boost(self):
+		#print 'boost'
 		x,y = getXY(self.sampled_df)
-		idx = MRMR.mrmr(x,y, n_selected_features=num_fea)
-		self.topics = idx[0:num_fea]
-		print self.topics
+		clf = AdaBoostClassifier(tree.DecisionTreeClassifier(max_depth=1),
+                         algorithm="SAMME",
+                         n_estimators=200)
+		clf.fit(x,y)
+		score = clf.feature_importances_		
+		t = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
+		self.topics = t[:self.num]
+		#score = list(score)
+		#self.topics = getHighScoreIndex(score,self.num)
+
+
+	
+	def getTopic(self):
+		return self.topics
+	
+class MRMRvoter(threading.Thread):
+	'''
+	https://github.com/jundongl/scikit-feature/blob/master/skfeature/example/test_MRMR.py
+		
+	'''
+	def __init__(self,sampled_df,f_num):
+		threading.Thread.__init__(self)
+		self.sampled_df = sampled_df
+		self.topics = []
+		self.num = f_num
+		self.feat = []
+
+
+
+	def run(self):
+		self.mrmr()
+
+
+
+	def mrmr(self):
+		
+		x,y = getXY(self.sampled_df)
+		feat = []
+		#idx = MRMR.mrmr(x,y, n_selected_features=self.num)
+		idx = JMI.jmi(x,y, n_selected_features=self.num)
+		for i in range(self.num):
+			feat.append(idx[i])
+		#print feat
+		self.topics = feat
+		#print self.topics
+
 
 
 	
@@ -401,7 +447,7 @@ class rfvoter(threading.Thread):
 
 def get_method(type=0):
 
-	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter,dt2.DecisionTree,WrapperDTVoter]
+	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter,dt2.DecisionTree,WrapperDTVoter,MRMRvoter,adaboostvoter,sampling_method.EntropyVoter]
 	return method_list[type]
 	
 def over_sampling(x,y):

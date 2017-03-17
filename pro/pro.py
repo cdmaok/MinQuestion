@@ -12,7 +12,7 @@ import config
 data_path = config.pro_data_path
 middle_0_path = config.pro_middle_0_path
 middle_freq_path = config.pro_middle_freq_path
-def attr(): ##属性取�?
+def attr(): ##属性取�?
     df = pd.read_csv(data_path)
     mat = df.as_matrix()
     row,col = mat.shape
@@ -125,7 +125,10 @@ def getPro(rule):
     Mat_Label = enc.transform(MatX[0:num_label_samples]).toarray() ##encode
     Mat_Unlabel = enc.transform(MatX[num_label_samples:]).toarray() ##encode
 
-    unlabel_data_labels = label_propagation.labelPropagation(Mat_Label, Mat_Unlabel, labels, kernel_type = 'rbf', rbf_sigma = 0.5,max_iter=10000)
+    #unlabel_data_labels = label_propagation.labelPropagation(Mat_Label, Mat_Unlabel, labels, kernel_type = 'rbf', rbf_sigma = 0.5,max_iter=10000)
+    clf = label_propagation.LabelPropagation(kernel='rbf', gamma=20, n_neighbors=7,alpha=1, max_iter=30, tol=1e-3, n_jobs=1)
+    clf.fit(Mat_Label,labels)
+    unlabel_data_labels = clf.predict(Mat_Unlabel)
 
     line_num = 0
     num = 0
@@ -151,9 +154,9 @@ def getPro(rule):
                         if line[ind[j]] in fea[j]: ##missing value
                             miss += 1
                     if miss == attr_num:
-			probs.append(1)
+                        probs.append(1)
                     else:
-			probs.append(0)
+                        probs.append(0)
     df = pd.read_csv(data_path)
     names = list(df['User_name'])
     print len(names) == len(probs)
@@ -161,7 +164,7 @@ def getPro(rule):
     tmp = [ (names[i],probs[i]) for i in range(tt)]
     #print tmp
     return tmp
-	
+
 # main function
 if __name__=="__main__":
     #df = pd.read_csv('./data.csv')
@@ -174,21 +177,21 @@ if __name__=="__main__":
     #          'Michigan','Florida','Lowisiana','Ohio','Pennsyirania','Wisconsin','Arizona','Georgia','Indiana','Missour','North Carolina']
 
 
-	'''
-	attr_num = 2 ##属性个�?
+    '''
+    attr_num = 2 ##属性个�?
     ind = [0 for j in xrange(attr_num)]
     ind[0] = attributes.index('Education')
     ind[1] = attributes.index('Income')
     feature = [0 for j in xrange(attr_num)]
-    # feature = [['California','Washington DC','Hawaii','Maryland','Massaehusetts','New York','Rhode Island','Vermont','Connecticut','Delaware','Illinois','Maine','New Jersey','New Mexico','Oregon','Washington','Colorado','Minnesota','Nevada','New Hampshire','Virginia']]  #Hillary必胜�?
-    # feature = ['Alabama','Alaska','Arkansas','Idaho','Kansas','Kentucky','Louisiana','Mississippi','Montana','Nebraska','North Dakota','Oklahoma','South Carolina','South Dakota','Tennessee','Texas','Utah','West Virginia','Wyoming'] #Tramp必胜�?
+    # feature = [['California','Washington DC','Hawaii','Maryland','Massaehusetts','New York','Rhode Island','Vermont','Connecticut','Delaware','Illinois','Maine','New Jersey','New Mexico','Oregon','Washington','Colorado','Minnesota','Nevada','New Hampshire','Virginia']]  #Hillary必胜�?
+    # feature = ['Alabama','Alaska','Arkansas','Idaho','Kansas','Kentucky','Louisiana','Mississippi','Montana','Nebraska','North Dakota','Oklahoma','South Carolina','South Dakota','Tennessee','Texas','Utah','West Virginia','Wyoming'] #Tramp必胜�?
     feature[0] = ['High School','Some College','Associates Degree'] ##low-education
     feature[1] = ['$50,000 to $75,000','$35,000 to $50,000','$25,000 to $35,000','$75,000 to $100,000'] ##middle-class
-	'''
+    '''
 
-	rule = {'Education':['High School','Some College','Associates Degree'],'Income':['$50,000 to $75,000','$35,000 to $50,000','$25,000 to $35,000','$75,000 to $100,000']}
+    rule = {'Education':['High School','Some College','Associates Degree'],'Income':['$50,000 to $75,000','$35,000 to $50,000','$25,000 to $35,000','$75,000 to $100,000']}
 
-	print getPro(rule)
+    print getPro(rule)
 
 
     # # 测试
@@ -214,7 +217,7 @@ if __name__=="__main__":
     #             Mat_sample.append(x)
     #             labels_sample.append(1)
     #             num += 1
-    #     # 测试�?
+    #     # 测试�?
     #     test_labels = [] #test' labels
     #     SUM = len(Mat_sample)
     #     for j in xrange(int(SUM * 0.2)):
@@ -232,7 +235,7 @@ if __name__=="__main__":
     #     unlabel_data_labels = label_propagation.labelPropagation(Mat_Label, Mat_Unlabel, labels, kernel_type = 'rbf', rbf_sigma = 0.5)
     #     # unlabel_data_labels=labelPropagation(Mat_Label,Mat_Unlabel,labels,kernel_type='knn',knn_num_neighbors=10,max_iter=400)
     #
-    #     # 预测正确�?
+    #     # 预测正确�?
     #     num = 0.
     #     for j in xrange(len(test_labels)):
     #         if unlabel_data_labels[j] == test_labels[j]:

@@ -9,8 +9,7 @@ import json
 import knntext
 import config
 Comment_path = config.Comment_Dir
-#Text_path = config.Text_path
-#Matric_path = config.Vote_Matrix
+Matric_path = config.Vote_Matrix
 two_party_flag = config.two_party_flag
 Text_path = config.Text_path_tp if two_party_flag == True else config.Text_path
 #Text_path = config.Text_path_tp
@@ -84,16 +83,16 @@ def text(df):
 			writer.writerow([user[i],text[user[i]]])
 		else:
 			writer.writerow([user[i]])
-	writer.close()
+	#writer.close()
 
 
 if __name__ == '__main__':
-	# df = pd.read_csv(Matric_path)
-	# text(df)
-	Matric_path = '../../mq_data/topic_matric_twoparty_balan.csv'
-
 	df = pd.read_csv(Matric_path)
-	newdf = fill_whole(fill_knn_whole,df,simf='text')
+	text(df)
+	#Matric_path = '../../mq_data/topic_matric_twoparty_balan.csv'
+
+	#df = pd.read_csv(Matric_path)
+	#newdf = fill_whole(fill_knn_whole,df,simf='text')
 	# newdf.to_csv('./test_origin.csv',index=False)
-	print newdf.as_matrix().shape
+	#print newdf.as_matrix().shape
 
