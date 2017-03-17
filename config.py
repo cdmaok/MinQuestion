@@ -4,7 +4,7 @@
 #test.py
 Home = '/home/yangying'
 data_path = Home+'/mq_data/'
-result_path = Home+'/mq_result/other_rules/Labor/'
+result_path = Home+'/mq_result/fill_data/'
 two_party_flag = False
 #vote_matrix = 'topic_matric_twoparty_balan.csv'
 vote_matrix = 'topic_matric_origin.csv'

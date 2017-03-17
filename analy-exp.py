@@ -102,7 +102,7 @@ def get_stat(filename):
 				if not line: break
 			querys = [ t.split() for i,t in enumerate(querys) if i not in [1,3,5,7]]
 			whole.append(querys)
-	row = 2
+	row = 0
 	col = 0
 	stats = [size[row][col] for size in whole]
 	return stats
@@ -160,8 +160,8 @@ def extract_qn(logfile,datafile=None):
 	x = df[querys].as_matrix()
 	y = list(df['Class'].as_matrix())
 	dt = DecisionTreeClassifier(criterion='entropy')
-	x[x>0] = 1
-	x[x<0] = -1
+	x[x>0.5] = 1
+	x[x<0.5] = -1
 	dt.fit(x,y)
 	classlist = ['Republican Party','Democratic Party']
         dot = export_graphviz(dt,filled=True,label='all',feature_names=querys,leaves_parallel=False,class_names=classlist,out_file=None)

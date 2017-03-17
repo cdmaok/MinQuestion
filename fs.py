@@ -46,11 +46,7 @@ def isEqual(a1,a2):
 
 def getHighScoreIndex(score,size):
 	index  = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
-	expand = cut(score,index,size)
-	#feature rank 
-	output = open('../mq_result/other_rules/age/old_feature_rank', 'a')
-	output.write(str(index[0:expand])+'\n')
-	output.close( )
+	expand = cut(score,index,size)	
 	return index[0:expand]
 
 class adaboostvoter(threading.Thread):
@@ -245,10 +241,12 @@ class Kbesetvoter(threading.Thread):
 
 	def kbest(self):
 		x,y = getXY(self.sampled_df)
+		#print x,y
 		kb = SelectKBest(self.func, k=self.num)
 		kb.fit_transform(x, y)
-		score = kb.scores_ 
+		score = kb.scores_ 		
 		self.topics = getHighScoreIndex(score,self.num)
+		#print self.topics
 
 
 	
@@ -374,11 +372,12 @@ class GBDTVoter(threading.Thread):
 def getXY(df):
 	def replaceLabel(x):
 		x = int(x)
-		tmp = 1 if x == 4 else -1
-		#tmp = 1 if x == 1 else -1
+		#tmp = 1 if x == 4 else -1
+		tmp = 1 if x == 1 else -1
 		return tmp		
 	headers = list(df.columns)
-	start = headers.index('user_topic')
+	#start = headers.index('user_topic')
+	start = -1
 	end = headers.index('Class')
 	x = df.ix[:,start + 1:end].as_matrix()
 	y = df.ix[:,end].apply(replaceLabel).as_matrix()

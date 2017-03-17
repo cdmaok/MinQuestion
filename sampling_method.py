@@ -178,15 +178,15 @@ def emsemble_sampling(ti,en,probs_file,origin_file,type=0,f_size=10):
     voters = []
     fs_method = fs.get_method(type)
     print str(fs_method)
-    output = open('../mq_result/other_rules/Labor/labor_feature_rank', 'a')
-    output.write(str(fs_method)+'\n')
-    output.close( )
+    #output = open('../mq_result/other_rules/Labor/labor_feature_rank', 'a')
+    #output.write(str(fs_method)+'\n')
+    #output.close( )
     #do 10 times, according to the attribute probability prediction to sampling each time
     for t in time:
 		#print("----------------------iteration------------------- no.",t+1)
 
 		if(en):
-			sampled_df = merge.get_file(probs_file,origin_file)
+			sampled_df = merge.get_sample(probs_file,origin_file)
 		else:
 			sampled_df = pd.read_csv(origin_file,dtype={"user_topic":str,"Class":str})
 		#test 
@@ -208,16 +208,16 @@ def emsemble_sampling(ti,en,probs_file,origin_file,type=0,f_size=10):
     for v in voters:
         all_topic += v.getTopic()
 		#feature rank 
-        output = open('../mq_result/other_rules/Labor/labor_feature_rank', 'a')
-        output.write(str(v.getTopic())+'\n')
-        output.close( )
+        #output = open('../mq_result/other_rules/Labor/labor_feature_rank', 'a')
+        #output.write(str(v.getTopic())+'\n')
+        #output.close( )
     print("-------print feature------")
     feature = []
     for i in Counter(all_topic).most_common(f_size):
-        a = str(i[0]+1)+"+"+str(i[1])+"+"+sampled_df.iloc[:,i[0]+1].name
+        a = str(i[0])+"+"+str(i[1])+"+"+sampled_df.iloc[:,i[0]].name
         #print(a)       
-        feature.append(i[0]+1)   
-    #print(feature)
+        feature.append(i[0])   
+    print(feature)
     #feature rank 
     #output = open('../mq_result/other_rules/age/old_feature_rank', 'a')
     #output.write(str(fs_method)+'\n')
