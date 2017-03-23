@@ -117,11 +117,11 @@ def getXY(df):
 	def replaceLabel(x):
 		x = int(x)
 		#tmp = 1 if x == 4 else -1
-		tmp = 1 if x == 1 else -1
+		tmp = 1 if x == 0 else -1
 		return tmp
 	headers = list(df.columns)
-	#start = headers.index('user_topic')
-	start = -1
+	start = headers.index('user_topic')
+	#start = -1
 	end = headers.index('Class')
 	x = df.ix[:,start + 1:end].as_matrix()
 	y = df.ix[:,end].apply(replaceLabel).as_matrix()
@@ -140,12 +140,12 @@ def main(feature,csvname,num=10):
 	start = -1
 	end = headers.index('Class')
 	goal_df = goal_df.ix[:,start+1:end+1]	
-	feature = feature + [-1]
+	feature = [0]+feature + [-1]
 
 	#print feature 
 	df = goal_df.ix[:,feature]
 	
-	#df.to_csv('./dt_result.csv',index=False)
+	df.to_csv('./test.csv',index=False)
 	#df = pd.read_csv(csvname,dtype={"user_topic":str,"Class":str})	
 	NNClassifier(df)
 	SvmrbfClassifier(df)	
@@ -158,8 +158,8 @@ def main(feature,csvname,num=10):
 		
 
 if __name__ == '__main__':
-	feature = [2722, 2883, 1189, 6284, 4496, 3121, 4952, 4346, 3550, 2426]
+	feature = [4346, 4496, 4327, 1189, 3121, 6284, 2883, 4184, 1305, 4792]
 	#csvname = './doc2vec/white_old_goal_fill.csv'
-	csvname = '../mq_result/white_old_knn0_goal_origin.csv'
+	csvname = '../mq_result/fill_data/data01/white_old_knntext0_goal_origin.csv'
 	#csvname = './test/iris.csv'
 	main(feature,csvname)

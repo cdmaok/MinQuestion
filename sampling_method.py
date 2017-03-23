@@ -104,14 +104,15 @@ class EntropyVoterSimple(threading.Thread):
 	def entropy(self,sampled_df):
 	
 		headers = list(sampled_df.columns)
-		start = headers.index('user_topic')
+		#start = headers.index('user_topic')
+		start = -1
 		end = headers.index('Class')
-		sampled_df = sampled_df.ix[:,start:end+1]
+		sampled_df = sampled_df.ix[:,start+1:end+1]
 				
 		#print f_num
 		topic_nums = len(sampled_df.iloc[0])-1
 		topic_index = []
-		for i in range(1,topic_nums):
+		for i in range(0,topic_nums):
 			topic_index.append(i)
 			#print(topic_index)
 
@@ -170,7 +171,7 @@ class EntropyVoterSimple(threading.Thread):
 	def getTopic(self):
 		return self.topics
 
-def emsemble_sampling(ti,en,probs_file,origin_file,type=0,f_size=10):
+def emsemble_sampling(ti,en,probs_file,origin_file,type=0,f_size=10,frac=0.8):
 
     
     #print f_size
@@ -179,21 +180,18 @@ def emsemble_sampling(ti,en,probs_file,origin_file,type=0,f_size=10):
     voters = []
     fs_method = fs.get_method(type)
     print str(fs_method)
-<<<<<<< HEAD
-    #output = open('../mq_result/other_rules/fw/fw_feature_rank', 'a')
-=======
     #output = open('../mq_result/other_rules/Labor/labor_feature_rank', 'a')
->>>>>>> 25dd69c24806213d59911bc167230ee4af53b566
     #output.write(str(fs_method)+'\n')
     #output.close( )
     #do 10 times, according to the attribute probability prediction to sampling each time
     for t in time:
 		#print("----------------------iteration------------------- no.",t+1)
 
-		if(en):
-			sampled_df = merge.get_sample(probs_file,origin_file)
+		if(en):    # 0 sample, 1 resample 
+			sampled_df = merge.get_sample(probs_file,origin_file,t,frac,0)
+			#sampled_df.to_csv('./test_0.csv')
 		else:
-			sampled_df = pd.read_csv(origin_file,dtype={"user_topic":str,"Class":str})
+			sampled_df = pd.read_csv(origin_file,index_col=0,dtype={"user_topic":str,"Class":str})
 		#test 
 		#sampled_df.to_csv('./test_0.csv')
 		
@@ -213,32 +211,21 @@ def emsemble_sampling(ti,en,probs_file,origin_file,type=0,f_size=10):
     for v in voters:
         all_topic += v.getTopic()
 		#feature rank 
-<<<<<<< HEAD
-        #output = open('../mq_result/other_rules/fw/fw_feature_rank', 'a')
-=======
         #output = open('../mq_result/other_rules/Labor/labor_feature_rank', 'a')
->>>>>>> 25dd69c24806213d59911bc167230ee4af53b566
         #output.write(str(v.getTopic())+'\n')
         #output.close( )
     print("-------print feature------")
     feature = []
-    for i in Counter(all_topic).most_common(f_size):
-<<<<<<< HEAD
-        a = str(i[0]+1)+"+"+str(i[1])+"+"+sampled_df.iloc[:,i[0]+1].name
+    for i in Counter(all_topic).most_common(f_size):#f_size
+        a = str(i[0]+1)+"+"+str(i[1])+"+"+sampled_df.iloc[:,i[0]].name
         print(a)       
         feature.append(i[0]+1)   
-    print(feature)
-=======
-        a = str(i[0])+"+"+str(i[1])+"+"+sampled_df.iloc[:,i[0]].name
-        #print(a)       
-        feature.append(i[0])   
     print(feature)
     #feature rank 
     #output = open('../mq_result/other_rules/age/old_feature_rank', 'a')
     #output.write(str(fs_method)+'\n')
     #output.write(str(feature)+'\n')
     #output.close( )
->>>>>>> 25dd69c24806213d59911bc167230ee4af53b566
     return feature
 
 

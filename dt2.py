@@ -3,7 +3,9 @@ import numpy as np
 import types
 import pandas as pd
 from copy import copy
-import  threading
+import threading,collections
+from imblearn.over_sampling import ADASYN,SMOTE
+from fill import util
 
 class DecisionTree(threading.Thread):
     
@@ -37,6 +39,7 @@ class DecisionTree(threading.Thread):
         #df.describe()
         topic_nums = len(df.iloc[0])-1
         self.train,self.labels = self.getXY(df)
+        self.train,self.labels = self.over_sampling(self.train,self.labels)
         feature = []		       
         #print 'train set is ',self.train.shape,type(self.train)
         #print 'labels set is ',self.labels.shape,type(self.labels)
@@ -48,16 +51,31 @@ class DecisionTree(threading.Thread):
     def getXY(self,df):
         def replaceLabel(x):
             x = int(x)
-            tmp = 1 if x == 4 else -1
-            #tmp = 1 if x == 1 else -1
+            #tmp = 1 if x == 4 else -1
+            tmp = 1 if x == 0 else -1
             return tmp
         headers = list(df.columns)
-        start = headers.index('user_topic')
+        #start = headers.index('user_topic)
+        start = -1
         end = headers.index('Class')
         x = df.ix[:,start + 1:end].as_matrix()
         y = df.ix[:,end].apply(replaceLabel).as_matrix()
         return x,y            
-        
+     
+    def over_sampling(self,x,y):
+		ld = dict(collections.Counter(y))
+		if len(ld) < 2:
+			print 'warning,no enough data',ld
+			print 'please add some more instance'
+			return x,y
+		else:
+			if util.isImBalance(ld):
+				print 'do the oversampling procedure'
+				fm = ADASYN()
+				return fm.fit_sample(x,y)
+			else:
+				return x,y
+	 
     def contructTree(self,data1,nodeNum,labels1):
             #since its a recursive function we need to have a base case. return when the number of wrong classes is 0. maybe 
             #we can chane it later

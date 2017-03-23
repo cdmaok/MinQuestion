@@ -11,31 +11,50 @@ import sampling_method
 import pandas as pd
 import math,numpy
 import fs
-
+import random
 
 ## this file is to merge get pro and sampling method script file
 
-def sample(probs,df,type = 0):
+def get_sample_file(probs,df,frac=0.8,type = 0):
 	# only extract people with pro == 1	
 
 	df = pd.read_csv(df,index_col=0,dtype={"user_topic":str,"Class":str})
 	if(type == 1): #resample
 		users = list(df.index.values)
-		size = int(len(users)*0.8)
+		size = int(len(users)*frac)
 		#print size
-		sampled_names = resample(users,n_samples=size, random_state=0)
+		sampled_names = resample(users,n_samples=size)
 		sample_df = df.ix[sampled_names,:]
 		#sample_df.to_csv('test.csv')
 	else:
-		sample_df = df.sample(frac=0.5)		
-	labels = list(sample_df.drop_duplicates(subset='Class').Class)
-	#print len(sample_df)
-	print sample_df.ix[:,0]
-	return sample_df,labels
+		users = list(df.index.values)
+		#print users
+		size = int(len(users)*frac)
+		#print size
+		sampled_names = random.sample(users,size)
+		sfile = '../mq_result/test/sample/sample_' + str(frac)
+		f= open(sfile,'a')
+		f.write(str(sampled_names)+'\n')
+		f.close()
 
-def get_sample(probs_file,origin_file,type):
+
+def sample(probs,df,t,frac=0.8,type = 0):
+	# only extract people with pro == 1	
+	sfile = '../mq_result/test/sample/sample_' + str(frac)
+	sampled_all = [eval(e.strip()) for e in open(sfile).readlines() ]
+	sampled_names = sampled_all[t]
+	#print sampled_names
+	df = pd.read_csv(df,index_col=0,dtype={"user_topic":str,"Class":str})
+	sample_df = df.ix[sampled_names,:]
+	users = list(sample_df.index)
+	#print users == sampled_names
+	labels = list(sample_df.drop_duplicates(subset='Class').Class)
+	return sample_df,labels	
+	
+def get_sample(probs_file,origin_file,t,frac,type):
+    #print origin_file
     probs = read_probs(probs_file)	
-    df,labels = sample(probs,origin_file,type)
+    df,labels = sample(probs,origin_file,t,frac,type)
     sampled_df = processdf(df,labels)
     #print(sampled_df['Class'].value_counts())
     return sampled_df		
@@ -59,7 +78,6 @@ def log_probs(probs,filename):
 	
 def read_probs(filename):
 	probs = [eval(e.strip()) for e in open(filename).readlines() ]
-	type(probs)
 	return probs
 
 def get_probs_file(rule,probs_file,tp):
@@ -71,14 +89,20 @@ def get_probs_file(rule,probs_file,tp):
 	log_probs(probs,probs_file)
 
 
-def goal_all(_list):	
+def goal_all(_list,pos=0):	
 	#print len(_list)
 	_indexes = []
 	i=0
-	while i < len(_list):	
-		_indexes.append(_list[i][0])
+	while i < len(_list):
+		if(pos == 0):
+			_indexes.append(_list[i][0])
+		else:
+			pro = _list[i][1]
+			user_name = _list[i][0]
+			if pro >= 0.5 and pro <= 1:
+				_indexes.append(_list[i][0])
 		i += 1
-	#print('the number of this group: ',len(_indexes))
+	print('the number of this group: ',len(_indexes))
 	return _indexes
 
 def goal_file(_list,_user):	
@@ -104,7 +128,7 @@ def MergeTopic(probs,df,type,multi = True):
 		sampled_names = goal_file(probs,users)	
 		
 	elif(type == 2):
-		sampled_names = goal_all(probs)
+		sampled_names = goal_all(probs,1)
 		
 	labels = list(df.drop_duplicates(subset='Class').Class)
 	condict = {'user_topic':sampled_names}
@@ -116,6 +140,7 @@ def MergeTopic(probs,df,type,multi = True):
 def get_tp_file(probs_file,df,origin_file):
     probs = read_probs(probs_file)	
     sampled_df,labels = MergeTopic(probs,df,2)
+    #print('the number of this group: ', sampled_df.shape)
     sampled_df.to_csv(origin_file,index=False)
     return sampled_df	
 	
