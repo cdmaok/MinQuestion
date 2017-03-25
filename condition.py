@@ -135,21 +135,21 @@ class FieldDict:
 		
 
 if __name__ == '__main__':
-	#filename = '../mq_data/process_data/data.csv'
-	filename = '../mq_data/process_data/data.csv.2int'
+	filename = '../mq_data/process_data/data.csv'
+	#filename = '../mq_data/process_data/data.csv.2int'
 	rule =  {'Gender':'Male','Age':20,'Location':['California','Nebraska']}
 	#rule =  {'Gender':'Male'}
-	df = pd.read_csv(filename)
+	#df = pd.read_csv(filename)
 	#print df.describe()
-	con = Condition(rule)
+	#con = Condition(rule)
 	#print con.extract(df)
 	
-	fdpath = '../mq_data/process_data/data.csv.fd'
-	fd = FieldDict(fdpath)
-	#fd = FieldDict()
-	#fd.train(filename,missing_value = np.nan)
+	#fdpath = '../mq_data/process_data/data.csv.fd'
+	#fd = FieldDict(fdpath)
+	fd = FieldDict()
+	fd.train(filename,missing_value = np.nan)
 
-	newcon = fd.parse(con)
-	l = newcon.get_labels(df,np.nan,v=1)
-	print collections.Counter(l)
+	#newcon = fd.parse(con)
+	#l = newcon.get_labels(df,np.nan,v=1)
+	#print collections.Counter(l)
 		

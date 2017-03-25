@@ -1,5 +1,5 @@
 #coding=utf-8
-import os,merge,sys,classifier,config,collections,operator
+import os,merge,sys,classifier,config,collections,operator,lp
 import pandas as pd
 import sampling_method,fs
 import numpy as np
@@ -22,18 +22,20 @@ data_path = config.data_path
 result_path = config.result_path
 
 
-rule = {'Ethnicity':'White','Age':[40,50,60,70,80,90,100,110]}
+rule = {'Ethnicity':'White'}
 
 ## generate .origin file
-def extract_matrix(userfile,vpfile):
+def extract_matrix(userfile,vpfile,namelist = None):
 	df = pd.read_csv(userfile)
-	c = Condition({'Ethnicity':'White'})
+	c = Condition(rule)
 	newdf = c.extract(df)
 	#newdf.to_csv('../mq_exp/white_user',index = False)
 	username = list(newdf['User_name'])
+	if namelist != None:
+		username = namelist
 	df = pd.read_csv(vpfile)
 	newdf = df.ix[df['user_topic'].isin(username)]
-	newdf.to_csv('../mq_exp/white.spare.origin',index=False)
+	newdf.to_csv('../mq_exp/white.lp.origin',index=False)
 
 def process_matrix(origin_file):
 	df = pd.read_csv(origin_file)
@@ -44,14 +46,20 @@ def process_matrix(origin_file):
 	y = newdf['Class'].as_matrix()
 	newdf.to_csv('../mq_exp/white.sparse.matrix',index=False)
 
+def process_pro():
+	pro = lp.process(rule)
+	namelist = [e[0] for e in pro if e[1] > 0.5]
+	return namelist
+
 def process_mc(origin_file):
 	df = pd.read_csv(origin_file)
 	columns = getQuerylist(df)
-	#f = mc.fill_knn_whole
-	f = mc.fill_sim_whole
+	f = mc.fill_knn_whole
+	#f = mc.fill_sim_whole
+	#f = mc.fill_svd_whole
 	newdf = mc.fill_whole(f,df)
 	newdf = newdf.replace(['Republican Party','Democratic Party'],[1,-1])
-	newdf.to_csv('../mq_exp/white.sim',index=False)
+	newdf.to_csv('../mq_exp/white.sparse.lp.knn',index=False)
 
 def getQuerylist(df):
 	columns = df.columns.values.tolist()
@@ -94,8 +102,8 @@ def checkfs(filename):
 		ti = poslist[:i]
 		newx = x[:,ti]
 		newy = y
+		print getCVscore(newx,newy)[0]
 		#score = getScore(newx,newy)
-		print i,getCVscore(newx,newy)[0]
 		#print i,score
 
 ### get score with cross validtion
@@ -139,6 +147,12 @@ def ensembleTopicIndex(ti,part,i):
 			final.append(key)
 	return final
 
+def ensembleTopicIndex3(ti,part,i):
+	candidates = []
+	for t in ti:
+		candidates += t[:i]
+	return candidates
+
 def ensembleTopicIndex2(ti,part,i):
 	candidates = []
 	for t in ti:
@@ -152,6 +166,7 @@ def ensembleTopicIndex2(ti,part,i):
 def checkemfs(col,totalti,part,x,y):
 	for i in range(1,col+1):
 		enti = ensembleTopicIndex2(totalti,part,i)
+		#enti = ensembleTopicIndex(totalti,part,i)
 		if len(enti) < 1: 
 			print 
 			continue
@@ -159,6 +174,7 @@ def checkemfs(col,totalti,part,x,y):
 		newy = y
 		score = getScore(newx,newy)
 		print score
+		#print getCVscore(newx,newy)[0]
 
 #### simple emfs
 def mcemfs(filename,part = 4):
@@ -291,11 +307,14 @@ def main():
 
 if __name__ == '__main__':
 	#extract_matrix('../mq_data/user_info_twoparty.csv','../mq_data/topic_matric_twoparty.csv')
+	#extract_matrix('../mq_data/user_info_twoparty.csv','../mq_data/topic_matric_twoparty.csv',namelist = process_pro())
+	#extract_matrix('../mq_data/user_info_twoparty.csv','../mq_data/topic_matric_twoparty_balan.csv',namelist = process_pro())
 	#process_matrix('../mq_exp/white.sparse.origin')
-	#process_mc('../mq_exp/white.origin')
-	#mcemfs('../mq_exp/white.svd')
-	#olemfs('../mq_exp/white.matrix')
-	#bsemfs('../mq_exp/white.matrix')
-	#abemfs('../mq_exp/white.matrix')
+	#process_mc('../mq_exp/white.lp.origin')
+	#mcemfs('../mq_exp/white.lp.knn')
+	#olemfs('../mq_exp/white.lp.knn')
+	#bsemfs('../mq_exp/white.lp.knn')
+	abemfs('../mq_exp/white.sparse.lp.knn')
 	#decide_feature_size('../mq_exp/white.origin')
-	checkfs('../mq_exp/white.sparse.matrix')
+	#checkfs('../mq_exp/white.sparse.knn')
+	#process_pro()

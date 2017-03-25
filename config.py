@@ -44,7 +44,7 @@ Text_path_tp = data_path + 'text_twoparty.csv'
 
 
 #lp.py
-i2int_path = '~/mq_data/process_data/data.csv.2int'
-fd_path = '~/mq_data/process_data/data.csv.fd'
+i2int_path = '/home/yangying/mq_data/process_data/data.csv.2int'
+fd_path = '/home/yangying/mq_data/process_data/data.csv.fd'
 
 groundtruth = data_path + 'groundtruth/white_old.gt'
