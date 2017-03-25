@@ -33,12 +33,12 @@ def filter_twoparty_file(probs_file,df,origin_fill,goal_fill):
 def main():
 	probs_file = result_path +'white_old.pro'
 	df = result_path + 'knntext0_origin.csv'
-	#origin_fill = result_path + 'white_old_knntext0_origin.csv'
+	origin_fill = result_path + 'white_old_knntext0_origin.csv'
 	goal_fill = result_path + 'white_old_knntext0_goal_origin.csv'
 	#df = goal_fill
 	#filter_twoparty_file(probs_file,df,origin_fill,goal_fill)
-	
-	origin_fill = result_path + 'test/sonar.csv'
+	origin_fill = goal_fill 
+	#origin_fill = result_path + 'test/sonar.csv'
 	for i in range(10):
 		#print i
 		frac = 0.5

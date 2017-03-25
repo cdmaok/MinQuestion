@@ -32,7 +32,7 @@ def get_sample_file(probs,df,frac=0.8,type = 0):
 		size = int(len(users)*frac)
 		#print size
 		sampled_names = random.sample(users,size)
-		sfile = '../mq_result/test/sample/sample_' + str(frac)
+		sfile = '../mq_result/fill_data/sample/goal/sample_' + str(frac)
 		f= open(sfile,'a')
 		f.write(str(sampled_names)+'\n')
 		f.close()
@@ -40,7 +40,7 @@ def get_sample_file(probs,df,frac=0.8,type = 0):
 
 def sample(probs,df,t,frac=0.8,type = 0):
 	# only extract people with pro == 1	
-	sfile = '../mq_result/test/sample/sample_' + str(frac)
+	sfile = '../mq_result/fill_data/sample/goal/sample_' + str(frac)
 	sampled_all = [eval(e.strip()) for e in open(sfile).readlines() ]
 	sampled_names = sampled_all[t]
 	#print sampled_names

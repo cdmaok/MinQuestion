@@ -20,7 +20,7 @@ import sampling_method
 import math
 from fill import util
 import dt2
-
+import fs_unsupervised
 
 from skfeature.function.information_theoretical_based import MRMR
 from sklearn.ensemble import AdaBoostClassifier
@@ -462,7 +462,7 @@ class rfvoter(threading.Thread):
 def get_method(type=0):
 
 
-	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter,dt2.DecisionTree,WrapperDTVoter,MRMRvoter,adaboostvoter,sampling_method.EntropyVoter]
+	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter,dt2.DecisionTree,WrapperDTVoter,MRMRvoter,adaboostvoter,sampling_method.EntropyVoter,fs_unsupervised.lapscore,fs_unsupervised.mcfs,fs_unsupervised.ndfs,fs_unsupervised.spec,fs_unsupervised.udfs,fs_unsupervised.lowvariance,fs_unsupervised.pfa]
 
 	return method_list[type]
 	
@@ -491,8 +491,8 @@ if __name__ == '__main__':
 	#pv.l1()
 	#pv = svmvoter(df,10)
 	#pv.svm()
-	pv = dtvoter(df,10)
-	pv.dt()
+	#pv = dtvoter(df,10)
+	#pv.dt()
 	#pv = VarianceVoter(df,10)
 	#pv.variance()
 	#pv = CorelationVoter(df,10)
@@ -503,7 +503,7 @@ if __name__ == '__main__':
 	#pv.l1()
 	#pv = GBDTVoter(df,10)
 	#pv.gbdt()
-	#pv = rfvoter(df,10)
-	#pv.rf()
+	pv = rfvoter(df,10)
+	pv.rf()
 	print pv.getTopic()
 
