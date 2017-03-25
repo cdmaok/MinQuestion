@@ -8,6 +8,7 @@ from fill import mc
 from fill import simrank
 from knntext import text_sim
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
 from condition import Condition
 from sklearn.svm import LinearSVC
 from sklearn.feature_selection import RFE
@@ -32,7 +33,7 @@ def extract_matrix(userfile,vpfile):
 	username = list(newdf['User_name'])
 	df = pd.read_csv(vpfile)
 	newdf = df.ix[df['user_topic'].isin(username)]
-	newdf.to_csv('../mq_exp/white.origin',index=False)
+	newdf.to_csv('../mq_exp/white.spare.origin',index=False)
 
 def process_matrix(origin_file):
 	df = pd.read_csv(origin_file)
@@ -41,7 +42,7 @@ def process_matrix(origin_file):
 	newdf = newdf.replace(['Republican Party','Democratic Party'],[1,-1])
 	x = newdf[columns].as_matrix()
 	y = newdf['Class'].as_matrix()
-	newdf.to_csv('../mq_exp/white.matrix',index=False)
+	newdf.to_csv('../mq_exp/white.sparse.matrix',index=False)
 
 def process_mc(origin_file):
 	df = pd.read_csv(origin_file)
@@ -83,20 +84,23 @@ def decide_feature_size(filename):
 def checkfs(filename):
 	df = pd.read_csv(filename)
 	clf = LinearSVC(penalty = 'l1',dual = False)
-	ref = RFE(estimator = clf, n_features_to_select = 1)
+	ref = RFE(estimator = clf, step = 10 ,n_features_to_select = 1)
 	x,y = getXY(df)
-	x,y = fs.over_sampling(x,y)
+	#x,y = fs.over_sampling(x,y)
 	ref.fit(x,y)
 	ranking = ref.ranking_
 	poslist = sorted(range(len(ranking)),key = lambda x: ranking[x])
-	for i in range(1,len(ranking) + 1):
+	for i in range(1,len(ranking) + 1,20):
 		ti = poslist[:i]
 		newx = x[:,ti]
 		newy = y
-		score = getScore(newx,newy)
-		print score
+		#score = getScore(newx,newy)
+		print i,getCVscore(newx,newy)[0]
+		#print i,score
 
+### get score with cross validtion
 def getCVscore(x,y):
+	clf = LinearSVC(penalty='l2')
 	accuracy = cross_val_score(clf, x,y, cv=5).mean()
         precision = cross_val_score(clf, x,y, cv=5, scoring='precision').mean()
         f1 = cross_val_score(clf, x,y, cv=5, scoring='f1').mean()
@@ -104,7 +108,7 @@ def getCVscore(x,y):
         roc_auc = cross_val_score(clf, x,y, cv=5, scoring='roc_auc').mean()
 	return accuracy,precision,f1,recall,roc_auc
 
-
+## get prediction score
 def getScore(x,y):
 	clf = LinearSVC(penalty='l2')
 	## maybe rbf kernel
@@ -144,7 +148,7 @@ def ensembleTopicIndex2(ti,part,i):
 	ans = [ e[0] for e in sort_tc]
 	return ans
 	
-	
+## get score with selcted feature
 def checkemfs(col,totalti,part,x,y):
 	for i in range(1,col+1):
 		enti = ensembleTopicIndex2(totalti,part,i)
@@ -156,6 +160,7 @@ def checkemfs(col,totalti,part,x,y):
 		score = getScore(newx,newy)
 		print score
 
+#### simple emfs
 def mcemfs(filename,part = 4):
 	df = pd.read_csv(filename)
 	x,y = getXY(df)
@@ -183,6 +188,7 @@ def mcemfs(filename,part = 4):
 	totalti.append(ans)
 	checkemfs(cols,totalti,part,x,y)
 		
+### emfs with overlap
 def olemfs(filename,part = 4):
 	df = pd.read_csv(filename)
 	x,y = getXY(df)
@@ -211,6 +217,7 @@ def olemfs(filename,part = 4):
 	totalti.append(ans)
 	checkemfs(cols,totalti,part,x,y)
 
+### emfs with bootstrap
 def bsemfs(filename,part = 4):
 	df = pd.read_csv(filename)
 	x, y = getXY(df)
@@ -227,6 +234,8 @@ def bsemfs(filename,part = 4):
 		totalIndex.append(ans)
 	checkemfs(col,totalIndex,part,x,y)
 
+
+### used by abemfs,change probability list
 def adjustpl(pl,x,y,index,clf):
 	row = x.shape[0]
 	newx = x[index,:]
@@ -241,6 +250,7 @@ def adjustpl(pl,x,y,index,clf):
 	return pl
 	
 
+### emfs with adaboost
 def abemfs(filename,part = 4):
 	
 	df = pd.read_csv(filename)
@@ -280,12 +290,12 @@ def main():
 
 
 if __name__ == '__main__':
-	#extract_matrix('../mq_data/user_info_twoparty.csv','../mq_data/topic_matric_twoparty_balan_reduce.csv')
-	#process_matrix('../mq_exp/white.origin')
+	#extract_matrix('../mq_data/user_info_twoparty.csv','../mq_data/topic_matric_twoparty.csv')
+	#process_matrix('../mq_exp/white.sparse.origin')
 	#process_mc('../mq_exp/white.origin')
 	#mcemfs('../mq_exp/white.svd')
-	olemfs('../mq_exp/white.matrix')
+	#olemfs('../mq_exp/white.matrix')
 	#bsemfs('../mq_exp/white.matrix')
 	#abemfs('../mq_exp/white.matrix')
 	#decide_feature_size('../mq_exp/white.origin')
-	#checkfs('../mq_exp/white.sim')
+	checkfs('../mq_exp/white.sparse.matrix')
