@@ -11,7 +11,8 @@ import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.tree import export_graphviz
 import pydotplus
-## demo -->4 repub --> 1
+import collections
+## demo -->4 repubG --> 1
 
 def get_missing(filename):
 	df = pd.read_csv(filename)
@@ -87,7 +88,7 @@ def get_querys(filename):
 			res.append('\n'.join(c))
 	return res
 
-def get_stat(filename):
+def get_stat(filename,row=2,col=0):
 	f = open(filename)
 	whole = []
 	while True:
@@ -102,6 +103,7 @@ def get_stat(filename):
 				if not line: break
 			querys = [ t.split() for i,t in enumerate(querys) if i not in [1,3,5,7]]
 			whole.append(querys)
+
 	row = 0
 	col = 0
 	stats = [size[row][col] for size in whole]
@@ -156,12 +158,22 @@ def extract_qn(logfile,datafile=None):
 		print 'need datafile name'
 		sys.exit()
 	querys = best(logfile).split('\n')
+	draw_graph(querys,datafile)
+
+def draw_graph(querys,datafile):
 	df = newdf(datafile)
 	x = df[querys].as_matrix()
 	y = list(df['Class'].as_matrix())
+<<<<<<< HEAD
+	dt = DecisionTreeClassifier(criterion='gini',min_samples_split=15)
+	x[x>0] = 1
+	x[x<0] = -1
+	print x.shape,len(y)
+=======
 	dt = DecisionTreeClassifier(criterion='entropy')
 	x[x>0.5] = 1
 	x[x<0.5] = -1
+>>>>>>> 25dd69c24806213d59911bc167230ee4af53b566
 	dt.fit(x,y)
 	classlist = ['Republican Party','Democratic Party']
         dot = export_graphviz(dt,filled=True,label='all',feature_names=querys,leaves_parallel=False,class_names=classlist,out_file=None)
@@ -176,9 +188,38 @@ def getVector(df,party,q):
 	neg = (vs > 0).sum()
 	print total,neg,total - neg
 	return (neg,total - neg)
-	
 
 
+def get_full_rank(rank_file,start,size = 10):
+	i = 0
+	rcontents = open(rank_file).readlines()
+	startIndex = start * 11 + 1
+	endIndex = startIndex + 10
+	ranks = [eval(string)  for string in rcontents[startIndex:endIndex]]
+	votelist = []
+	for rank in ranks:
+		votelist += rank[:size]
+	votedict = collections.Counter(votelist)
+	topquery = [ e[0] for e in votedict.most_common(size)]
+	return topquery
+
+		
+
+
+def get_full_topic(rank_file,log_file,data_file,row = 0,col = 0):
+	print 'need parameter: rank_file,log_file,data_file'
+	df = pd.read_csv(data_file)
+	columns = df.columns.values.tolist()
+	columns.remove('user_topic')
+	columns.remove('Class')
+	querys = columns
+	precs = get_stat(log_file,row = row,col = col)
+	index = sorted(range(len(precs)),key = lambda x: precs[x],reverse = True)
+	start = index[0]
+	voterank = get_full_rank(rank_file,start)
+	votequery = [querys[i].strip() for i in voterank]
+	print '\n'.join(votequery)
+	draw_graph(votequery,data_file)
 
 if __name__ == '__main__':
 	if len(sys.argv) < 2:
@@ -189,5 +230,6 @@ if __name__ == '__main__':
 	#get_stat(filename)
 	#print best(filename)
 	#extract_data(filename)
-	extract_qn(filename)
+	#extract_qn(filename)
 	#box_plot_matrix()
+	get_full_topic(sys.argv[1],sys.argv[2],sys.argv[3])

@@ -20,6 +20,7 @@ import sampling_method
 import math
 from fill import util
 import dt2
+import fs_unsupervised
 
 from skfeature.function.information_theoretical_based import MRMR
 from sklearn.ensemble import AdaBoostClassifier
@@ -46,7 +47,11 @@ def isEqual(a1,a2):
 
 def getHighScoreIndex(score,size):
 	index  = sorted(range(len(score)),key=lambda k:score[k],reverse=True)
-	expand = cut(score,index,size)	
+	expand = cut(score,index,size)
+	#feature rank 
+	#output = open('../mq_result/other_rules/age/old_feature_rank', 'a')
+	#output.write(str(index[0:expand])+'\n')
+	#output.close( )
 	return index[0:expand]
 
 class adaboostvoter(threading.Thread):
@@ -70,6 +75,7 @@ class adaboostvoter(threading.Thread):
 	def boost(self):
 		#print 'boost'
 		x,y = getXY(self.sampled_df)
+		x,y = over_sampling(x,y)
 		clf = AdaBoostClassifier(tree.DecisionTreeClassifier(max_depth=1),
                          algorithm="SAMME",
                          n_estimators=200)
@@ -107,6 +113,7 @@ class MRMRvoter(threading.Thread):
 	def mrmr(self):
 		
 		x,y = getXY(self.sampled_df)
+		x,y = over_sampling(x,y)
 		feat = []
 		idx = MRMR.mrmr(x,y, n_selected_features=self.num)
 		for i in range(10):
@@ -143,6 +150,7 @@ class svmvoter(threading.Thread):
 	def svm(self):
 		#print 'svm'
 		x,y = getXY(self.sampled_df)
+		x,y = over_sampling(x,y)
 		clf = svm.SVC(kernel='linear')
 		clf.fit(x,y)
 		score = clf.coef_[0]
@@ -176,6 +184,7 @@ class lassovoter(threading.Thread):
 	def l1(self):
 		#print 'lasso'
 		x,y = getXY(self.sampled_df)
+		x,y = over_sampling(x,y)
 		#print x,y
 		clf = linear_model.LogisticRegression(penalty='l1')
 		clf.fit(x,y)
@@ -211,8 +220,9 @@ class dtvoter(threading.Thread):
 	def dt(self):
 		#print 'dt'
 		x,y = getXY(self.sampled_df)
-		#clf = tree.DecisionTreeClassifier(criterion='gini',max_depth=self.num)
-		clf = tree.DecisionTreeClassifier(criterion='gini')
+		x,y = over_sampling(x,y)
+		clf = tree.DecisionTreeClassifier(criterion='gini',max_depth=self.num)
+		#clf = tree.DecisionTreeClassifier(criterion='gini')
 		clf.fit(x,y)
 		score = clf.feature_importances_
 		#print list(score)
@@ -241,6 +251,7 @@ class Kbesetvoter(threading.Thread):
 
 	def kbest(self):
 		x,y = getXY(self.sampled_df)
+		x,y = over_sampling(x,y)
 		#print x,y
 		kb = SelectKBest(self.func, k=self.num)
 		kb.fit_transform(x, y)
@@ -267,6 +278,7 @@ class VarianceVoter(threading.Thread):
 
 	def variance(self):
 		x,y = getXY(self.sampled_df)
+		x,y = over_sampling(x,y)
 		v = list(np.var(x,axis=0))
 		score = sorted(range(len(v)),key = lambda i:v[i],reverse=True)
 		self.topics = getHighScoreIndex(score,self.num)
@@ -289,6 +301,7 @@ class CorelationVoter(threading.Thread):
 
 	def corelation(self):
 		x,y = getXY(self.sampled_df)
+		x,y = over_sampling(x,y)
 		row,cols = x.shape
 		v = [ np.corrcoef(x[:,c],y)[0,1] for c in range(cols)]
 		score = sorted(range(len(v)),key = lambda i:v[i] if not math.isnan(v[i]) else -2,reverse=True)
@@ -312,7 +325,7 @@ class WrapperVoter(threading.Thread):
 
 	def rfe(self):
 		x,y = getXY(self.sampled_df)
-		x,y = over_sampling(x,y)
+		#x,y = over_sampling(x,y)
 		rfe = RFE(estimator=self.base,n_features_to_select=self.num)
 		rfe.fit(x,y)
 		self.topics = list(rfe.get_support(indices=True))
@@ -336,7 +349,7 @@ class WrapperDTVoter(threading.Thread):
 
 	def rfe(self):
 		x,y = getXY(self.sampled_df)
-		#x,y = over_sampling(x,y)
+		x,y = over_sampling(x,y)
 		rfe = RFE(estimator=self.base,n_features_to_select=self.num)
 		rfe.fit(x,y)
 		self.topics = list(rfe.get_support(indices=True))
@@ -359,6 +372,7 @@ class GBDTVoter(threading.Thread):
 
 	def gbdt(self):
 		x,y = getXY(self.sampled_df)
+		x,y = over_sampling(x,y)
 		dt = GradientBoostingClassifier()
 		dt.fit(x,y)
 		#print dt.feature_importances_
@@ -373,7 +387,7 @@ def getXY(df):
 	def replaceLabel(x):
 		x = int(x)
 		#tmp = 1 if x == 4 else -1
-		tmp = 1 if x == 1 else -1
+		tmp = 1 if x == 0 else -1
 		return tmp		
 	headers = list(df.columns)
 	#start = headers.index('user_topic')
@@ -404,6 +418,7 @@ class RndLassovoter(threading.Thread):
 
 	def l1(self):
 		x,y = getXY(self.sampled_df)
+		x,y = over_sampling(x,y)
 		clf = linear_model.RandomizedLogisticRegression()
 		clf.fit(x,y)
 		score = list(clf.scores_)
@@ -446,7 +461,9 @@ class rfvoter(threading.Thread):
 
 def get_method(type=0):
 
-	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter,dt2.DecisionTree,WrapperDTVoter,MRMRvoter,adaboostvoter]
+
+	method_list = [svmvoter,lassovoter,dtvoter,Kbesetvoter,sampling_method.EntropyVoterSimple,VarianceVoter,CorelationVoter,WrapperVoter,RndLassovoter,GBDTVoter,rfvoter,dt2.DecisionTree,WrapperDTVoter,MRMRvoter,adaboostvoter,sampling_method.EntropyVoter,fs_unsupervised.lapscore,fs_unsupervised.mcfs,fs_unsupervised.ndfs,fs_unsupervised.spec,fs_unsupervised.udfs,fs_unsupervised.lowvariance,fs_unsupervised.pfa]
+
 	return method_list[type]
 	
 def over_sampling(x,y):
@@ -474,8 +491,8 @@ if __name__ == '__main__':
 	#pv.l1()
 	#pv = svmvoter(df,10)
 	#pv.svm()
-	pv = dtvoter(df,10)
-	pv.dt()
+	#pv = dtvoter(df,10)
+	#pv.dt()
 	#pv = VarianceVoter(df,10)
 	#pv.variance()
 	#pv = CorelationVoter(df,10)
@@ -486,7 +503,7 @@ if __name__ == '__main__':
 	#pv.l1()
 	#pv = GBDTVoter(df,10)
 	#pv.gbdt()
-	#pv = rfvoter(df,10)
-	#pv.rf()
+	pv = rfvoter(df,10)
+	pv.rf()
 	print pv.getTopic()
 

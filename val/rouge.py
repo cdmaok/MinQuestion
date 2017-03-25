@@ -14,9 +14,9 @@ import math
 from itertools import combinations
 
 #groundtruth = config.groundtruth
-groundtruth = '../../mq_data/groundtruth/white_old.gt'
+#groundtruth = '../../mq_data/groundtruth/white_old.gt'
 
-def rouge(candidate,reference,rouge_type,n=1,Dskip=4):#n专门给ROUGE-N,L使用，Dskip专门给ROUGE-S使用
+def rouge(candidate,reference,rouge_type,n=1,Dskip=4,rougeS_method=2):#n专门给ROUGE-N,L使用，Dskip专门给ROUGE-S使用
     if(rouge_type=='n'):#ROUGE-N
         if(type(candidate)==list):
             candidate=' '.join(candidate)
@@ -44,42 +44,87 @@ def rouge(candidate,reference,rouge_type,n=1,Dskip=4):#n专门给ROUGE-N,L使用
         sum_l=0
         total_word_in_reference=0
         for r in reference:
-            total_word_in_reference+=len(r.split(' '))
-            sum_c=0
+            len_r=len(r.split(' '))
+            total_word_in_reference+=len_r
+            
+            union_set=set()
             for c in candidate:
-                l= lcs_len(r,c,n)[0]
-                sum_c+=l
-            sum_l+=sum_c
+                len_c=len(c.split(' '))
+                l,_,direct= lcs_len(r,c,n)
+                lcs_content=get_lcs(direct,"".join(r.split(' ')),len_r-1,len_c-1)
+                #print "".join(lcs_content)
+                union_set=union_set.union(lcs_content)
+                
+            sum_l+=len(union_set)
         Rlcs=1.0*sum_l/total_word_in_reference
         return Rlcs
     if(rouge_type=='w'):#ROUGE-W(f(k)=k**2)
+        '''
         sum_l=0
         total_word_in_reference=0
         for r in reference:
             total_word_in_reference+=len(r.split(' '))**2
             sum_c=0
             for c in candidate:
-                l,p= lcs_len(r,c,n)
+                l,p,_= lcs_len(r,c,n)
                 sum_c+=l*p
             sum_l+=sum_c
         Rwlcs=math.sqrt(1.0*sum_l/total_word_in_reference)
         return Rwlcs
+        '''
+        total_r=" ".join(reference)
+        total_c=" ".join(candidate)
+        total_word_in_reference=len(total_r.split(' '))**2
+        l,p,_=lcs_len(total_r,total_c,n)
+        wlcs=l*p
+        Rwlcs=math.sqrt(1.0*wlcs/total_word_in_reference)
+        return Rwlcs
         
     if(rouge_type=='s'):#ROUGE-S
-        r=''.join(reference)
-        c=''.join(candidate)
-        m=len(r.split(' '))
-        n=len(c.split(' '))
-        r_skip_bigram=get_skip_bigram(r,Dskip)
-        c_skip_bigram=get_skip_bigram(c,Dskip)
-        same=0
-        for i in r_skip_bigram:
-            if(i in c_skip_bigram):
-                same+=1
-        
-        Rskip=1.0*same/(math.factorial(m)/(2*math.factorial(m-2)))
-        Pskip=1.0*same/(math.factorial(n)/(2*math.factorial(n-2)))
-        return Rskip,Pskip
+        if(rougeS_method==1):#跳跃距离的大小为reference集合中词的个数(很大)，运算速度慢
+            r=' '.join(reference)
+            c=' '.join(candidate)
+            m=len(r.split(' '))
+            n=len(c.split(' '))
+            r_skip_bigram=get_skip_bigram(r,Dskip)
+            c_skip_bigram=get_skip_bigram(c,Dskip)
+            same=0
+            for i in r_skip_bigram:
+                if(i in c_skip_bigram):
+                    same+=1
+            
+            Rskip=1.0*same/(math.factorial(m)/(2*math.factorial(m-2)))
+            Pskip=1.0*same/(math.factorial(n)/(2*math.factorial(n-2)))
+            return Rskip,Pskip
+        elif(rougeS_method==2):#跳跃距离设小一点，比如4或9
+            count_r=0
+            a_r=0
+            a_p=0
+            for r in reference:
+                count_r+=1
+                count_c=0
+                avg_r=0
+                avg_p=0
+                for c in candidate:
+                    count_c+=1
+                    m=len(r.split(' '))
+                    n=len(c.split(' '))
+                    r_skip_bigram=get_skip_bigram(r,Dskip)
+                    c_skip_bigram=get_skip_bigram(c,Dskip)
+                    same=0
+                    for i in r_skip_bigram:
+                        if(i in c_skip_bigram):
+                            same+=1
+                    
+                    Rskip=1.0*same/(math.factorial(m)/(2*math.factorial(m-2)))
+                    Pskip=1.0*same/(math.factorial(n)/(2*math.factorial(n-2)))
+                    avg_r+=Rskip
+                    avg_p+=Pskip
+                a_r+=1.0*avg_r/count_c
+                a_p+=1.0*avg_p/count_c
+            aver_R=1.0*a_r/count_r
+            aver_P=1.0*a_p/count_r
+            return aver_R,aver_P
         
         
 
@@ -131,7 +176,7 @@ def lcs_len(a,b,n):#返回LCS的长度
                 l[i][j] = l[i - 1][j]
                 direct[i - 1][j - 1] = 1
     max_p=np.array(p).max()             
-    return l[len(a)][len(b)],max_p
+    return l[len(a)][len(b)],max_p,direct
 
 def get_lcs(direct, a, i, j):
     '''

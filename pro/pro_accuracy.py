@@ -24,7 +24,7 @@ middle_freq_path = config.pro_middle_freq_path
 # data_path = './data.csv'
 # middle_0_path = './middledata_0.csv'
 # middle_freq_path ='./middledata_frequent.csv'
-def attr(): ##灞炴€у彇�?
+def attr(): ##灞炴€у彇�?
 	df = pd.read_csv(data_path)
 	mat = df.as_matrix()
 	row,col = mat.shape
@@ -91,7 +91,7 @@ def getPro(rule):
 
 	return Mat_Label_0,Mat_Label_1,num_0,num_1
 
-def accuracy(Mat_Label_0,Mat_Label_1,num_0,num_1,method):
+def accuracy(Mat_Label_0,Mat_Label_1,num_0,num_1):
 	Mat_sample = Mat_Label_0[:]
 	labels_sample = [0 for j in xrange(num_0)]
 	Mat_sample.extend(Mat_Label_1[:])
@@ -125,44 +125,49 @@ def accuracy(Mat_Label_0,Mat_Label_1,num_0,num_1,method):
 	recall_2 = []
 	f1_1 = []
 	f1_2 = []
+	methods = ['lpa','lr','svm','bayes','knn']
 
 	cv = KFold(n_splits=10,shuffle=True).split(Mat_Label)
-
 	for train_index, test_index in cv:
-		if method == 'lpa':
-			#unlabel_data_labels = label_propagation_accuracy.labelPropagation(Mat_Label[train_index], Mat_Label[test_index], labels[train_index], kernel_type = 'knn', rbf_sigma = 0.5,max_iter=10000)
-			clf = LabelPropagation(kernel='rbf', gamma=20, n_neighbors=7,
-                 alpha=1, max_iter=30, tol=1e-3, n_jobs=1)
-		elif method == 'lr':
-			clf = LogisticRegression()
-		elif method == 'svm':
-			clf = svm.SVC()  # class
-		elif method == 'dt':
-			clf = tree.DecisionTreeClassifier()
-		elif method == 'bayes':
-			clf = GaussianNB()
-		elif method == 'knn':
-			clf = KNeighborsClassifier()
+		p_1 = []
+		p_2 = []
+		r_1 = []
+		r_2 = []
+		f_1 = []
+		f_2 = []
+		for method in methods:
+			if method == 'lpa':
+				clf = LabelPropagation(kernel='rbf', gamma=20, n_neighbors=7,alpha=1, max_iter=30, tol=1e-3, n_jobs=1)
+			elif method == 'lr':
+				clf = LogisticRegression()
+			elif method == 'svm':
+				clf = svm.SVC()  # class
+			elif method == 'bayes':
+				clf = GaussianNB()
+			elif method == 'knn':
+				clf = KNeighborsClassifier()
 
-		#if method != 'lpa':
-		clf.fit(Mat_Label[train_index],labels[train_index])
-		unlabel_data_labels = clf.predict(Mat_Label[test_index])
+			clf.fit(Mat_Label[train_index],labels[train_index])
+			unlabel_data_labels = clf.predict(Mat_Label[test_index])
 
-		precision_1.append(metrics.precision_score(labels[test_index] ,unlabel_data_labels))
-		recall_1.append(metrics.recall_score(labels[test_index],unlabel_data_labels))
-		f1_1.append(metrics.f1_score(labels[test_index],unlabel_data_labels))
-		# accuracy = list(labels[test_index] - unlabel_data_labels).count(0) * 1.0/ len(test_index)
-		# results_1.append(accuracy)
+			p_1.append(metrics.precision_score(labels[test_index] ,unlabel_data_labels))
+			r_1.append(metrics.recall_score(labels[test_index],unlabel_data_labels))
+			f_1.append(metrics.f1_score(labels[test_index],unlabel_data_labels))
 
-		clf.fit(Mat_Label[test_index],labels[test_index])
-		unlabel_data_labels = clf.predict(Mat_Label[train_index])
+			clf.fit(Mat_Label[test_index],labels[test_index])
+			unlabel_data_labels = clf.predict(Mat_Label[train_index])
 
-		precision_2.append(metrics.accuracy_score(labels[train_index] ,unlabel_data_labels))
-		recall_2.append(metrics.recall_score(labels[train_index],unlabel_data_labels))
-		f1_2.append(metrics.f1_score(labels[train_index],unlabel_data_labels))
-		# accuracy = list(labels[train_index] - unlabel_data_labels).count(0) * 1.0/ len(train_index)
-		# results_2.append(accuracy)
-	return str( np.array(precision_1).mean() ),str( np.array(precision_2).mean() ),str( np.array(recall_1).mean() ),str( np.array(recall_2).mean() ),str( np.array(f1_1).mean() ),str( np.array(f1_2).mean() )
+			p_2.append(metrics.precision_score(labels[train_index] ,unlabel_data_labels))
+			r_2.append(metrics.recall_score(labels[train_index],unlabel_data_labels))
+			f_2.append(metrics.f1_score(labels[train_index],unlabel_data_labels))
+
+		precision_1.append(p_1)
+		recall_1.append(r_1)
+		f1_1.append(f_1)
+		precision_2.append(p_2)
+		recall_2.append(r_2)
+		f1_2.append(f_2)
+	return  np.array(precision_1).mean(axis=0).tolist(),np.array(precision_2).mean(axis=0).tolist(),np.array(recall_1).mean(axis=0).tolist(),np.array(recall_2).mean(axis=0).tolist(),np.array(f1_1).mean(axis=0).tolist(),np.array(f1_2).mean(axis=0).tolist()
   
 # main function
 if __name__=="__main__":
@@ -182,34 +187,25 @@ if __name__=="__main__":
 	rule_14 = {'Occupation':['Retired']}
 	rule_15 = {'Occupation':['Student']}
 	rules = [rule_1,rule_2,rule_3,rule_4,rule_5,rule_6,rule_7,rule_8,rule_9,rule_10,rule_11,rule_12,rule_13,rule_14,rule_15]
-	csvfile = file(result_path + '/p_r_f_2.csv','wb')
+	csvfile = file(result_path + '/p_r_f.csv','wb')
 	writer = csv.writer(csvfile)
-	# writer.writerow(['rule','lpa','lr','svm','dt','bayes','knn','yes','no'])
 
 	data = []
 	for rule in rules:
 		Mat_Label_0,Mat_Label_1,num_0,num_1 = getPro(rule)
 		method = ['lpa','lr','svm','bayes','knn']
-		tmp = []
-		for i in method:
-			p1,p2,r1,r2,f1,f2 = accuracy(Mat_Label_0,Mat_Label_1,num_0,num_1,i)
-			tmp.extend([p1,p2,r1,r2,f1,f2])
-			print tmp
-		tmp.extend([num_1,num_0])
-		data.append(tmp)
-		print tmp
-	print data
-	title = ['precision：  train ; test =  9:1','precision：  train ; test =  1:9','recall：  train ; test =  9:1','recall：  train ; test =  1:9','f1：  train ; test =  9:1','f1：  train ; test =  9:1']
+		p1,p2,r1,r2,f1,f2 = accuracy(Mat_Label_0,Mat_Label_1,num_0,num_1)
+		data.extend( [p1,p2,r1,r2,f1,f2,num_1,num_0])
+
+	title = ['precision�? train ; test =  9:1','precision�? train ; test =  1:9','recall�? train ; test =  9:1','recall�? train ; test =  1:9','f1�? train ; test =  9:1','f1�? train ; test =  1:9']
 	for i in xrange(len(title)):
 		writer.writerow([title[i]])
 		writer.writerow(['rule','lpa','lr','svm','bayes','knn','yes','no'])
 		for j in xrange(len(rules)):
 			tmp = [rules[j]]
-			for k in xrange(len(method)):
-				tmp.append(data[j][k*5])
-			tmp.append(data[j][-2])
-			tmp.append(data[j][-1])
-			print tmp
+			tmp.extend(data[8*j+i])
+			tmp.append(data[8*j+6])
+			tmp.append(data[8*j+7])
 			writer.writerow(tmp)
 		writer.writerow('\n')
 
