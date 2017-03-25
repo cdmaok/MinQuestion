@@ -145,7 +145,7 @@ def main(feature,csvname,num=10):
 	#print feature 
 	df = goal_df.ix[:,feature]
 	
-	#df.to_csv('./dt_result.csv',index=False)
+	df.to_csv('./sample_result.csv')
 	#df = pd.read_csv(csvname,dtype={"user_topic":str,"Class":str})	
 	NNClassifier(df)
 	SvmrbfClassifier(df)	

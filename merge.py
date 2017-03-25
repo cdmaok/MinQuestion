@@ -19,8 +19,7 @@ def sample(probs,df,type = 0):
 	# only extract people with pro == 1	
 
 	df = pd.read_csv(df,index_col=0,dtype={"user_topic":str,"Class":str})
-	if(type == 1): #resample
-		
+	if(type == 1): #resample		
 		users = list(df.index.values)
 		size = int(len(users)*0.8)
 		#print size
@@ -94,7 +93,7 @@ def goal_file(_list,_user):
 			#print 'ok'
 			_indexes.append(_list[i][0])
 		i += 1
-	#print('the number of this group: ',len(_indexes))
+	print('the number of goal group: ',len(_indexes))
 	return _indexes	
 	
 def MergeTopic(probs,df,type,multi = True):
@@ -106,6 +105,7 @@ def MergeTopic(probs,df,type,multi = True):
 		
 	elif(type == 2):
 		sampled_names = goal_all(probs)
+		print len(sampled_names)
 		
 	labels = list(df.drop_duplicates(subset='Class').Class)
 	condict = {'user_topic':sampled_names}
@@ -117,7 +117,8 @@ def MergeTopic(probs,df,type,multi = True):
 def get_tp_file(probs_file,df,origin_file):
     probs = read_probs(probs_file)	
     sampled_df,labels = MergeTopic(probs,df,2)
-    sampled_df.to_csv(origin_file,index=False)
+    print('the number of this group: ',sampled_df.shape)
+    sampled_df.to_csv(origin_file,index=False)	
     return sampled_df	
 	
 def get_goal_file(probs_file,goal_file,origin_file):	
