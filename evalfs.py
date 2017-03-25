@@ -90,7 +90,7 @@ def checkfs(filename):
 	ref.fit(x,y)
 	ranking = ref.ranking_
 	poslist = sorted(range(len(ranking)),key = lambda x: ranking[x])
-	for i in range(1,len(ranking) + 1,20):
+	for i in range(1,198):
 		ti = poslist[:i]
 		newx = x[:,ti]
 		newy = y
