@@ -60,9 +60,10 @@ def process_mc(origin_file):
 	#f = mc.fill_svd_whole
 	#newdf = mc.fill_whole(f,df)
 	f = text_sim.fill_knn_whole
-	newdf = text_sim.fill_whole(f,df,simf='simrank')
+	#newdf = text_sim.fill_whole(f,df,simf='simrank')
+	newdf = text_sim.fill_whole(f,df,simf='text')
 	newdf = newdf.replace(['Republican Party','Democratic Party'],[1,-1])
-	newdf.to_csv('../mq_exp/white.sparse.lp.simrank',index=False)
+	newdf.to_csv('../mq_exp/white.sparse.lp.knntext',index=False)
 
 def getQuerylist(df):
 	columns = df.columns.values.tolist()
@@ -315,9 +316,9 @@ if __name__ == '__main__':
 	#extract_matrix('../mq_data/user_info_twoparty.csv','../mq_data/topic_matric_twoparty.csv',namelist = process_pro())
 	#extract_matrix('../mq_data/user_info_twoparty.csv','../mq_data/topic_matric_twoparty_balan.csv',namelist = process_pro())
 	#process_matrix('../mq_exp/white.sparse.origin')
-	#process_mc('../mq_exp/white.sparse.lp.origin')
+	process_mc('../mq_exp/white.lp.origin')
 	#mcemfs('../mq_exp/white.lp.knn')
-	olemfs('../mq_exp/white.sparse.lp.svd')
+	#olemfs('../mq_exp/white.sparse.lp.svd')
 	#bsemfs('../mq_exp/white.lp.knn')
 	#abemfs('../mq_exp/white.lp.knn')
 	#decide_feature_size('../mq_exp/white.origin')
