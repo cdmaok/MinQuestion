@@ -73,6 +73,7 @@ class KNN(Solver):
             max_value=max_value,
             normalizer=normalizer)
         self.k = k
+        self.text_path = text_path
         self.verbose = verbose
         self.orientation = orientation
         self.print_interval = print_interval
@@ -91,7 +92,7 @@ class KNN(Solver):
 
         X_imputed = self._impute_fn(
             X=X,
-	    simf = self.simf,
+	    simf = self.simf,text_path=self.text_path,
             missing_mask=missing_mask,
             k=self.k,
             verbose=self.verbose,

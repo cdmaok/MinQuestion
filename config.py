@@ -36,8 +36,8 @@ Stoplist = Path + 'SmartStoplist.txt'
 
 
 #knntext/text_sim.py
-Text_path = data_path + 'text.csv'
-Text_path_tp = data_path + 'text_twoparty.csv'
+#Text_path = data_path + 'text.csv'
+#Text_path_tp = data_path + 'text_twoparty.csv'
 
 #origin_file = data_path+'topic_matric_twoparty_balan.csv'
 #origin_file = data_path+'topic_matric_origin.csv'

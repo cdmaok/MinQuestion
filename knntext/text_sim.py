@@ -11,10 +11,10 @@ import config
 Comment_path = config.Comment_Dir
 Matric_path = config.Vote_Matrix
 two_party_flag = config.two_party_flag
-Text_path = config.Text_path_tp if two_party_flag == True else config.Text_path
+#Text_path = config.Text_path_tp if two_party_flag == True else config.Text_path
 #Text_path = config.Text_path_tp
 
-def fill_whole(f,df,simf='text'):
+def fill_whole(f,df,text_path,simf='text'):
 	'''
 	fill the matrix with fancyimpute
 	parameters notation:
@@ -28,7 +28,7 @@ def fill_whole(f,df,simf='text'):
 	cols.remove('Class')
 	df = df.replace('yes','1').replace('no','-1').replace('?',np.nan)
 	m = df[cols].as_matrix().astype(np.float32)
-	m = f(m,simf)
+	m = f(m,text_path,simf)
 	questions = df.columns.values.tolist()
 	a = df['user_topic'].as_matrix()[:,None]
 	b = df['Class'].as_matrix()[:,None]
@@ -36,12 +36,12 @@ def fill_whole(f,df,simf='text'):
 	newdf = pd.DataFrame(data=filled,columns=questions)
 	return newdf
 
-def fill_knn_whole(matrix,simf):
+def fill_knn_whole(matrix,text_path,simf):
 	'''
 	fill the matrix with knn
 	'''
 	# matrix = KNN(k=3).completes(matrix)
-	matrix = knntext.KNN(k=3,simf=simf).complete(matrix)
+	matrix = knntext.KNN(text_path,k=3,simf=simf).complete(matrix)
 	return matrix
 
 
@@ -66,7 +66,7 @@ def context(querylist,username):
 						toadd[user] = title + ' ' + text
 	return toadd
 
-def text(df):
+def text(df,Text_path):
 	row,col = df.shape
 	f = df.iloc[:,0]
 	user = []

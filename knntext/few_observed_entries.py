@@ -24,7 +24,7 @@ Filemodel = config.Filemodel
 #Text_path = config.Text_path
 origin_file = config.origin_file
 two_party_flag = config.two_party_flag
-Text_path = config.Text_path_tp if two_party_flag == True else config.Text_path
+#Text_path = config.Text_path_tp if two_party_flag == True else config.Text_path
 
 def doc2vec_method(df):
     df = df.replace(np.nan,'')
@@ -49,14 +49,14 @@ def doc2vec_method(df):
 
     return sim
 
-def knn_impute_few_observed(X, simf,missing_mask, k, verbose=False, print_interval=100):
+def knn_impute_few_observed(X, simf,text_path,missing_mask, k, verbose=False, print_interval=100):
 
     start_t = time.time()
     sim = None
     if simf == 'simrank':
         sim = simrank.simrank_from_file(origin_file)
     elif simf == 'text':
-        df = pd.read_csv(Text_path)
+        df = pd.read_csv(text_path)
         # df = pd.read_csv('./text_twoparty.csv')
         sim = doc2vec_method(df)
 
