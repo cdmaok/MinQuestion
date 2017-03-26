@@ -5,7 +5,7 @@
 Home = '/home/yangying'
 data_path = Home+'/mq_data/'
 result_path = Home+'/mq_result/fill_data/'
-two_party_flag = False
+two_party_flag = True
 #vote_matrix = 'topic_matric_twoparty_balan.csv'
 vote_matrix = 'topic_matric_origin.csv'
 #vote_matrix = 'topic_matric_twoparty_balan_reduce.csv'
@@ -44,7 +44,7 @@ Stoplist = Path + 'SmartStoplist.txt'
 
 
 #lp.py
-i2int_path = '~/mq_data/process_data/data.csv.2int'
-fd_path = '~/mq_data/process_data/data.csv.fd'
+i2int_path = '/home/yangying/mq_data/process_data/data.csv.2int'
+fd_path = '/home/yangying/mq_data/process_data/data.csv.fd'
 
 groundtruth = data_path + 'groundtruth/white_old.gt'

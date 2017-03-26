@@ -117,7 +117,7 @@ def goal_file(_list,_user):
 			#print 'ok'
 			_indexes.append(_list[i][0])
 		i += 1
-	#print('the number of this group: ',len(_indexes))
+	print('the number of goal group: ',len(_indexes))
 	return _indexes	
 	
 def MergeTopic(probs,df,type,multi = True):
