@@ -12,6 +12,7 @@ from sklearn.model_selection import cross_val_score
 from condition import Condition
 from sklearn.svm import LinearSVC
 from sklearn.feature_selection import RFE
+from sklearn.neighbors import KNeighborsClassifier
 
 
 ### this file is to check em fs 's performance
@@ -54,12 +55,14 @@ def process_pro():
 def process_mc(origin_file):
 	df = pd.read_csv(origin_file)
 	columns = getQuerylist(df)
-	f = mc.fill_knn_whole
+	#f = mc.fill_knn_whole
 	#f = mc.fill_sim_whole
 	#f = mc.fill_svd_whole
-	newdf = mc.fill_whole(f,df)
+	#newdf = mc.fill_whole(f,df)
+	f = text_sim.fill_knn_whole
+	newdf = text_sim.fill_whole(f,df,simf='simrank')
 	newdf = newdf.replace(['Republican Party','Democratic Party'],[1,-1])
-	newdf.to_csv('../mq_exp/white.sparse.lp.knn',index=False)
+	newdf.to_csv('../mq_exp/white.sparse.lp.simrank',index=False)
 
 def getQuerylist(df):
 	columns = df.columns.values.tolist()
@@ -108,7 +111,8 @@ def checkfs(filename):
 
 ### get score with cross validtion
 def getCVscore(x,y):
-	clf = LinearSVC(penalty='l2')
+	#clf = LinearSVC(penalty='l2')
+	clf = KNeighborsClassifier(n_neighbors=10)
 	accuracy = cross_val_score(clf, x,y, cv=5).mean()
         precision = cross_val_score(clf, x,y, cv=5, scoring='precision').mean()
         f1 = cross_val_score(clf, x,y, cv=5, scoring='f1').mean()
@@ -118,7 +122,8 @@ def getCVscore(x,y):
 
 ## get prediction score
 def getScore(x,y):
-	clf = LinearSVC(penalty='l2')
+	#clf = LinearSVC(penalty='l2')
+	clf = NearestNeighbors(n_neighbors=10)
 	## maybe rbf kernel
 	result = []
 	for i in range(10):
@@ -151,7 +156,7 @@ def ensembleTopicIndex3(ti,part,i):
 	candidates = []
 	for t in ti:
 		candidates += t[:i]
-	return candidates
+	return list(set(candidates))
 
 def ensembleTopicIndex2(ti,part,i):
 	candidates = []
@@ -165,16 +170,16 @@ def ensembleTopicIndex2(ti,part,i):
 ## get score with selcted feature
 def checkemfs(col,totalti,part,x,y):
 	for i in range(1,col+1):
-		enti = ensembleTopicIndex2(totalti,part,i)
+		#enti = ensembleTopicIndex2(totalti,part,i)
+		enti = ensembleTopicIndex3(totalti,part,i)
 		#enti = ensembleTopicIndex(totalti,part,i)
 		if len(enti) < 1: 
 			print 
 			continue
 		newx = x[:,enti]
 		newy = y
-		score = getScore(newx,newy)
-		print score
-		#print getCVscore(newx,newy)[0]
+		#print getScore(newx,newy)
+		print getCVscore(newx,newy)[0]
 
 #### simple emfs
 def mcemfs(filename,part = 4):
@@ -310,11 +315,11 @@ if __name__ == '__main__':
 	#extract_matrix('../mq_data/user_info_twoparty.csv','../mq_data/topic_matric_twoparty.csv',namelist = process_pro())
 	#extract_matrix('../mq_data/user_info_twoparty.csv','../mq_data/topic_matric_twoparty_balan.csv',namelist = process_pro())
 	#process_matrix('../mq_exp/white.sparse.origin')
-	#process_mc('../mq_exp/white.lp.origin')
+	#process_mc('../mq_exp/white.sparse.lp.origin')
 	#mcemfs('../mq_exp/white.lp.knn')
-	#olemfs('../mq_exp/white.lp.knn')
+	olemfs('../mq_exp/white.sparse.lp.svd')
 	#bsemfs('../mq_exp/white.lp.knn')
-	abemfs('../mq_exp/white.sparse.lp.knn')
+	#abemfs('../mq_exp/white.lp.knn')
 	#decide_feature_size('../mq_exp/white.origin')
 	#checkfs('../mq_exp/white.sparse.knn')
 	#process_pro()

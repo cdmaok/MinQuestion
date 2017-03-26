@@ -5,7 +5,7 @@
 Home = '/home/yangying'
 data_path = Home+'/mq_data/'
 result_path = Home+'/mq_result/fill_data/'
-two_party_flag = False
+two_party_flag = True
 #vote_matrix = 'topic_matric_twoparty_balan.csv'
 vote_matrix = 'topic_matric_origin.csv'
 #vote_matrix = 'topic_matric_twoparty_balan_reduce.csv'
