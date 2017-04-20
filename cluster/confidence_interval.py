@@ -9,11 +9,11 @@ def get_top_q(_list):
 	
 	for j in range(len(_list)):
 		cov[j].append(_list[j])
-		print _list[j]
+		#print _list[j]
 		q1_yes = _list[j][3][4]
 		q1_po = _list[j][4]
-		q1_ci = _list[j][4]
-		print q1_yes,q1_ci
+		q1_ci = _list[j][5]
+		#print q1_yes,q1_ci
 		q1_l = q1_yes - q1_ci
 		q1_r = q1_yes + q1_ci
 		for k in range(len(_list)):
@@ -24,7 +24,7 @@ def get_top_q(_list):
 					q2_yes = _list[k][3][4]
 				else: q2_yes = _list[k][3][5]
 				
-				q2_ci = _list[k][4]
+				q2_ci = _list[k][5]
 				q2_l = q2_yes - q2_ci
 				q2_r = q2_yes + q2_ci
 				
