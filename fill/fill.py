@@ -11,7 +11,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import matplotlib.pyplot as plt
 import graphviz
 import numpy as np
-#import RAKE
+import RAKE
 import json
 import os
 import csv

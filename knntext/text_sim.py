@@ -66,7 +66,7 @@ def context(querylist,username):
 						toadd[user] = title + ' ' + text
 	return toadd
 
-def text(df,Text_path):
+def text(df,text_path):
 	row,col = df.shape
 	f = df.iloc[:,0]
 	user = []
@@ -75,7 +75,7 @@ def text(df,Text_path):
 	querylist = df.columns.values[1:-1]  #第一�?
 	querylist = [q.strip().decode('utf-8','ignore')  for q in list(querylist)]
 	text = context(querylist,user)
-	csvfile = file(Text_path,'wb')
+	csvfile = file(text_path,'wb')
 	writer = csv.writer(csvfile)
 	writer.writerow(['username','text'])
 	for i in xrange(len(user)):

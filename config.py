@@ -4,12 +4,12 @@
 #test.py
 Home = '/home/yangying'
 data_path = Home+'/mq_data/'
-result_path = Home+'/mq_result/fill_data/'
-two_party_flag = True
+result_path = Home+'/mq_result/'
+two_party_flag = False
 #vote_matrix = 'topic_matric_twoparty_balan.csv'
-vote_matrix = 'topic_matric_origin.csv'
+#vote_matrix = 'topic_matric_origin.csv'
 #vote_matrix = 'topic_matric_twoparty_balan_reduce.csv'
-#vote_matrix ='topic_matric_origin_balan.csv'
+vote_matrix ='topic_matric_origin_balan.csv'
 
 origin_file = data_path + vote_matrix
 
@@ -28,10 +28,10 @@ protp_middle_freq_path = pro_path + 'middledata_frequent_twoparty.csv'
 #fill/fill.py
 Path = data_path
 Vote_Matrix = origin_file
-Cluster_Result = Path + '/process_data/fulldata_xmeans.csv'
-Cluster_Result_tp = Path + '/process_data/fulldata_xmeans_twoparty.csv'
-Comment_Dir = Path + '/comments/'
-Filemodel = Path + '/wiki_doc2vec.bin'
+Cluster_Result = Path + 'process_data/fulldata_xmeans.csv'
+Cluster_Result_tp = Path + 'process_data/fulldata_xmeans_twoparty.csv'
+Comment_Dir = Path + 'comments/'
+Filemodel = Path + 'wiki_doc2vec.bin'
 Stoplist = Path + 'SmartStoplist.txt'
 
 

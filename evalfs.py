@@ -59,9 +59,12 @@ def process_mc(origin_file):
 	#f = mc.fill_sim_whole
 	#f = mc.fill_svd_whole
 	#newdf = mc.fill_whole(f,df)
+	text_path = data_path + 'text_' + origin_file.split('/')[-1]
+	if not os.path.exists(text_path):
+			text_sim.text(df,text_path)
 	f = text_sim.fill_knn_whole
 	#newdf = text_sim.fill_whole(f,df,simf='simrank')
-	newdf = text_sim.fill_whole(f,df,simf='text')
+	newdf = text_sim.fill_whole(f,df,text_path,simf='text')
 	newdf = newdf.replace(['Republican Party','Democratic Party'],[1,-1])
 	newdf.to_csv('../mq_exp/white.sparse.lp.knntext',index=False)
 

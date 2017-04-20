@@ -189,8 +189,10 @@ if __name__=="__main__":
     feature[1] = ['$50,000 to $75,000','$35,000 to $50,000','$25,000 to $35,000','$75,000 to $100,000'] ##middle-class
     '''
 
-    rule = {'Education':['High School','Some College','Associates Degree'],'Income':['$50,000 to $75,000','$35,000 to $50,000','$25,000 to $35,000','$75,000 to $100,000']}
-
+    #rule = {'Education':['High School','Some College','Associates Degree'],'Income':['$50,000 to $75,000','$35,000 to $50,000','$25,000 to $35,000','$75,000 to $100,000']}
+	
+    rule = {'Age':[10]}
+	
     print getPro(rule)
 
 

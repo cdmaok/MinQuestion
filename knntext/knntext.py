@@ -27,6 +27,7 @@ class KNN(Solver):
     """
     def __init__(
             self,
+            text_path=None,
             k=5,
             simf = 'text',
             orientation="rows",
